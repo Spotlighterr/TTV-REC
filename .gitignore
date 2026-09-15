@@ -1,0 +1,8 @@
+# Environment & Temporary files
+.DS_Store
+Thumbs.db
+*.log
+scratch/
+tmp/
+
+.agents/
