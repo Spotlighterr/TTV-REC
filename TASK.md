@@ -47,12 +47,20 @@ Tài liệu theo dõi tiến độ phát triển, cập nhật nội dung và ch
 ---
 
 ### Giai đoạn 2: Tiếp Nhận Dữ Liệu Thực Tế Từ Ban Truyền Thông (Đang Triển Khai)
-- [ ] **Liên kết Google Form**:
+- [ ] **Liên kết cuộc thi The Real Contest**:
+  - Bổ sung link Fanpage / Cổng thông tin chính thức của cuộc thi The Real Contest để gắn vào thẻ hoạt động và bài viết chuyên môn.
+- [ ] **Logo REC FTU chính thức**:
+  - Bổ sung file Logo CLB (định dạng SVG hoặc PNG trong suốt độ phân giải cao) để thay thế cho logo text trên Header và Footer.
+- [ ] **Hệ sinh thái liên kết dự án FindX (Tìm Nhà Cùng Bạn)**:
+  - [ ] Link Group Facebook: Cộng đồng Tìm trọ & Hỗ trợ sinh viên Chùa Láng
+  - [ ] Link Fanpage chính thức: FindX - Tìm nhà cùng bạn
+  - [ ] Link kênh TikTok chính thức: Kênh video mẹo thuê trọ sinh viên của FindX
+- [ ] **Liên kết Google Form tuyển dụng**:
   - Thay thế đường dẫn giữ chỗ `https://forms.gle/rec-ftu-gen16` bằng link Form tuyển chính thức do Ban Tổ chức cung cấp.
 - [ ] **Ấn phẩm truyền thông chính thức**:
   - Bổ sung bộ ảnh Key Visual (KV) chiến dịch Gen 16 khi Fanpage phát động.
   - Cập nhật ảnh đại diện (OG Image) để hiển thị đẹp mắt khi chia sẻ link lên Facebook và Zalo.
-- [ ] **Kênh liên hệ trực tuyến**:
+- [ ] **Kênh liên hệ trực tuyến của CLB**:
   - Gắn link Fanpage chính thức: `https://www.facebook.com/rec.ftu`
   - Gắn link TikTok / Instagram / LinkedIn của REC FTU nếu có chiến dịch đồng hành.
 
