@@ -6,129 +6,89 @@
 (function () {
   'use strict';
 
-  // --- Department JD Data ---
+  // --- Department Data (Phong cách sinh viên, ấm áp, truyền cảm hứng) ---
   const DEPARTMENTS_DATA = {
     'chuyen-mon': {
       title: 'Ban Chuyên môn',
-      tag: 'Khối Học thuật & Nghiên cứu',
+      tag: 'Bộ Não Học Thuật',
       tasks: [
-        'Nghiên cứu và tổng hợp báo cáo chuyên sâu về các phân khúc thị trường bất động sản.',
-        'Phân tích case study kinh doanh và trực tiếp biên soạn đề thi học thuật cho The Real Contest.',
-        'Cố vấn nội dung cho các chuỗi bài viết kiến thức và cẩm nang bất động sản của câu lạc bộ.',
-        'Tham gia các buổi đào tạo chuyên môn định kỳ cùng cố vấn và cựu thành viên giàu kinh nghiệm.'
+        'Cùng nhau nghiên cứu, tìm hiểu các bài toán thực tế và thị trường bất động sản thông qua các buổi sinh hoạt chuyên môn ấm cúng.',
+        'Lên ý tưởng và tham gia biên soạn đề bài cho cuộc thi The Real Contest, sân khấu học thuật BĐS sinh viên lớn nhất miền Bắc.',
+        'Viết bài phân tích, chia sẻ kiến thức hữu ích qua các chuyên mục REnews, REstudy và cẩm nang sinh viên Tìm nhà cùng bạn.',
+        'Tham gia các chuyến Company Tour thực tế đến các dự án và tập đoàn bất động sản hàng đầu.'
       ],
       requirements: [
-        'Sinh viên Đại học Ngoại thương và các trường khối kinh tế yêu thích bất động sản và tài chính.',
-        'Tư duy logic, khả năng tìm kiếm, chọn lọc và tổng hợp tài liệu tiếng Việt và tiếng Anh tốt.',
-        'Tinh thần chủ động học hỏi, cẩn trọng, cầu tiến và có trách nhiệm cao với tiến độ công việc.'
+        'Không yêu cầu em phải có sẵn kiến thức sâu rộng về BĐS, chỉ cần em có tinh thần cầu tiến, ham học hỏi và chăm chỉ.',
+        'Thích đọc, tìm tòi tài liệu và có tư duy logic, phản biện tích cực.',
+        'Có tinh thần trách nhiệm, đúng hẹn với công việc của ban và nhiệt tình với tập thể.'
       ],
       benefits: [
-        'Được đào tạo bài bản tư duy phân tích thị trường từ các anh chị đang công tác tại các tập đoàn lớn.',
-        'Cọ xát với các bài toán thực tế của doanh nghiệp thông qua việc biên soạn đề thi học thuật.',
-        'Môi trường học thuật nghiêm túc, rèn luyện tư duy phản biện và khả năng trình bày quan điểm.'
+        'Được các anh chị cựu thành viên (Alumni) và ban điều hành đào tạo bài bản từ những khái niệm BĐS cơ bản nhất.',
+        'Nâng cao tư duy tài chính, kỹ năng giải quyết tình huống kinh doanh thực tế.',
+        'Tích lũy kiến thức vững vàng để tham gia các cuộc thi sinh viên lớn và định hướng nghề nghiệp tương lai.'
       ]
     },
     'truyen-thong': {
       title: 'Ban Truyền thông',
-      tag: 'Khối Sáng tạo & Media',
+      tag: 'Tiếng Nói Sáng Tạo',
       tasks: [
-        'Lên chiến lược và triển khai kế hoạch truyền thông cho kỳ tuyển thành viên và các cuộc thi lớn.',
-        'Sáng tạo nội dung bài viết (Content Strategy) cho Fanpage chính thức REC FTU và các kênh vệ tinh.',
-        'Thiết kế bộ nhận diện hình ảnh, poster, ấn phẩm đồ họa sự kiện (Graphic Design).',
-        'Sản xuất video ngắn, quay chụp tư liệu sự kiện và quản trị tương tác trên mạng xã hội.'
+        'Sáng tạo ý tưởng nội dung (Content) cho Fanpage REC FTU, bắt trend sinh viên và lan tỏa hình ảnh đẹp của CLB.',
+        'Thiết kế các ấn phẩm hình ảnh, visual sự kiện, logo, poster (Design) bằng Photoshop, Illustrator hoặc Canva.',
+        'Quay chụp, lưu giữ những khoảnh khắc đẹp của Nhà REC trong các buổi chạy sự kiện, dã ngoại và bonding.',
+        'Sản xuất các video ngắn, clip TikTok, Reels sáng tạo và quản trị tương tác cùng các bạn sinh viên.'
       ],
       requirements: [
-        'Thế mạnh về viết lách, tư duy ngôn từ tốt hoặc có năng khiếu về thẩm mỹ, thiết kế hình ảnh, video.',
-        'Sử dụng được các công cụ thiết kế cơ bản đến nâng cao (Photoshop, Illustrator, Canva, Premiere, CapCut).',
-        'Nhanh nhạy với xu hướng truyền thông sinh viên, có tinh thần phối hợp nhóm nhịp nhàng.'
+        'Yêu thích viết lách, sáng tạo hoặc có gu thẩm mỹ, đam mê với màu sắc, thiết kế hay quay dựng video.',
+        'Đừng ngại nếu em chưa giỏi công cụ, anh chị sẵn sàng training từ những bước đầu tiên.',
+        'Nhanh nhạy, tươi vui và có tinh thần phối hợp ăn ý cùng đồng đội.'
       ],
       benefits: [
-        'Rèn luyện kỹ năng xây dựng chiến dịch truyền thông thực chiến với quy mô tiếp cận lớn.',
-        'Xây dựng Portfolio cá nhân chất lượng với các sản phẩm được phát hành chính thức.',
-        'Tự do hiện thực hóa các ý tưởng sáng tạo trong không gian làm việc cởi mở.'
+        'Rèn luyện kỹ năng xây dựng chiến dịch truyền thông thực tế với quy mô tiếp cận hàng chục nghìn sinh viên.',
+        'Tự tay tạo nên những ấn phẩm triệu view và xây dựng một Portfolio cá nhân cực xịn.',
+        'Làm việc trong môi trường tự do sáng tạo, khuyến khích mọi ý tưởng mới lạ.'
       ]
     },
     'doi-ngoai': {
       title: 'Ban Đối ngoại',
-      tag: 'Khối Quan hệ Đối tác & Tài trợ',
+      tag: 'Cầu Nối Bản Lĩnh',
       tasks: [
-        'Tìm kiếm, phân loại và tiếp cận các doanh nghiệp, tập đoàn bất động sản tiềm năng.',
-        'Soạn thảo hồ sơ mời tài trợ (Proposal), đàm phán quyền lợi và hỗ trợ ký kết hợp đồng hợp tác.',
-        'Kết nối và làm việc cùng các diễn giả, chuyên gia hàng đầu trong ngành bất động sản.',
-        'Duy trì mối quan hệ bền vững với các đơn vị bảo trợ truyền thông và câu lạc bộ bạn.'
+        'Kết nối CLB với các doanh nghiệp, tập đoàn bất động sản lớn để tìm kiếm các gói tài trợ tài chính và hiện vật.',
+        'Soạn thảo hồ sơ mời tài trợ (Proposal), gửi thư ngỏ và tham gia các buổi đàm phán quyền lợi cùng đại diện doanh nghiệp.',
+        'Mời các diễn giả, chuyên gia uy tín trong ngành BĐS về chia sẻ tại các buổi talkshow, workshop của trường.',
+        'Duy trì mối quan hệ thân thiết với các đơn vị bảo trợ truyền thông và các câu lạc bộ bạn tại Ngoại thương.'
       ],
       requirements: [
-        'Tác phong chỉn chu, đĩnh đạc, khả năng giao tiếp, lắng nghe và thuyết phục tốt.',
-        'Kỹ năng soạn thảo văn bản, email thương mại cẩn trọng và chuẩn mực.',
-        'Năng động, tự tin và kiên trì khi làm việc cùng đối tác doanh nghiệp.'
+        'Tự tin, hoạt bát, thích giao tiếp và mở rộng các mối quan hệ mới.',
+        'Tác phong lịch thiệp, chu đáo trong cách viết email và ứng xử.',
+        'Kiên trì, không nản lòng trước thử thách và có tinh thần cầu tiến.'
       ],
       benefits: [
-        'Cơ hội gặp gỡ và làm việc trực tiếp với đại diện doanh nghiệp, chuyên gia bất động sản uy tín.',
-        'Trui rèn kỹ năng đàm phán, xử lý tình huống và phong thái làm việc chuyên nghiệp.',
-        'Xây dựng mạng lưới quan hệ (Networking) giá trị cho lộ trình nghề nghiệp tương lai.'
+        'Cơ hội hiếm có để tiếp xúc, làm việc trực tiếp với các anh chị quản lý tại các tập đoàn lớn ngay từ năm nhất, năm hai.',
+        'Nâng tầm kỹ năng đàm phán, thuyết phục và phong thái tự tin trước đám đông.',
+        'Sở hữu mạng lưới quan hệ (Networking) rộng lớn, mở ra nhiều cơ hội thực tập và việc làm sau này.'
       ]
     },
     'to-chuc': {
       title: 'Ban Tổ chức',
-      tag: 'Khối Vận hành & Nhân sự',
+      tag: 'Khung Xương Vận Hành',
       tasks: [
-        'Lập kế hoạch chi tiết, điều phối timeline và trực tiếp vận hành các sự kiện lớn nhỏ của REC.',
-        'Quản lý ngân sách, chuẩn bị cơ sở vật chất, hậu cần kỹ thuật và phòng chống rủi ro sự kiện.',
-        'Quản trị nhân sự nội bộ, theo dõi tiến độ và đánh giá mức độ đóng góp của các thành viên.',
-        'Tổ chức các hoạt động gắn kết văn hóa, bonding, dã ngoại và sinh hoạt nội bộ của CLB.'
+        'Lên ý tưởng, kịch bản, timeline chi tiết và điều phối vận hành trực tiếp các sự kiện: The Real Contest, Talkshow, Company Tour.',
+        'Quản lý ngân sách dự án, khảo sát địa điểm, chuẩn bị cơ sở vật chất, âm thanh, ánh sáng và hậu cần kỹ thuật.',
+        'Chăm sóc đời sống tinh thần của thành viên, theo dõi tiến độ và gắn kết các ban trong câu lạc bộ.',
+        'Đứng sau tổ chức các buổi bonding, dã ngoại, sinh nhật, prom và những đêm thức cùng nhau làm nên kỷ niệm thanh xuân.'
       ],
       requirements: [
-        'Nhanh nhẹn, tháo vát, chu đáo và có khả năng bao quát công việc tốt.',
-        'Bình tĩnh và linh hoạt khi xử lý các tình huống phát sinh tại hiện trường sự kiện.',
-        'Nhiệt huyết, trách nhiệm cao và mong muốn tạo dựng môi trường gắn bó cho tập thể.'
+        'Tháo vát, nhanh nhẹn, chu đáo và biết quan tâm đến mọi người xung quanh.',
+        'Khả năng bao quát, sắp xếp thời gian hợp lý và bình tĩnh xử lý các tình huống bất ngờ.',
+        'Nhiệt huyết, lăn xả và luôn giữ ngọn lửa nhiệt tình cho cả tập thể.'
       ],
       benefits: [
-        'Nắm vững kỹ năng quản trị dự án, phân bổ nguồn lực và vận hành sự kiện chuyên nghiệp.',
-        'Trở thành người giữ lửa văn hóa câu lạc bộ, gắn kết các thế hệ thành viên.',
-        'Được tín nhiệm và tôi luyện bản lĩnh người đứng đầu qua các chương trình thực tế.'
+        'Trở thành người nắm giữ kỹ năng quản lý dự án, xử lý rủi ro và điều phối sự kiện lớn.',
+        'Là linh hồn giữ lửa, gắn kết các thế hệ thành viên và tạo nên những kỷ niệm ấm áp nhất của thời sinh viên.',
+        'Được tôi luyện bản lĩnh và khả năng lãnh đạo thông qua các trải nghiệm thực tế.'
       ]
     }
   };
-
-  // --- Theme Management ---
-  const THEME_STORAGE_KEY = 'rec_ftu_theme';
-  const themeToggleBtn = document.getElementById('theme-toggle');
-
-  function getPreferredTheme() {
-    const stored = localStorage.getItem(THEME_STORAGE_KEY);
-    if (stored === 'light' || stored === 'dark') {
-      return stored;
-    }
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  }
-
-  function applyTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem(THEME_STORAGE_KEY, theme);
-    if (themeToggleBtn) {
-      themeToggleBtn.setAttribute('aria-label', theme === 'dark' ? 'Chuyển sang chế độ sáng' : 'Chuyển sang chế độ tối');
-    }
-  }
-
-  // Initialize theme
-  applyTheme(getPreferredTheme());
-
-  if (themeToggleBtn) {
-    themeToggleBtn.addEventListener('click', function () {
-      const current = document.documentElement.getAttribute('data-theme');
-      const nextTheme = current === 'dark' ? 'light' : 'dark';
-      applyTheme(nextTheme);
-    });
-  }
-
-  // Listen for OS theme changes
-  if (window.matchMedia) {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
-      if (!localStorage.getItem(THEME_STORAGE_KEY)) {
-        applyTheme(e.matches ? 'dark' : 'light');
-      }
-    });
-  }
 
   // --- Mobile Navigation Drawer ---
   const mobileMenuBtn = document.getElementById('mobile-menu-btn');
@@ -164,7 +124,7 @@
     });
   });
 
-  // --- Department JD Modal ---
+  // --- Department Modal Controller ---
   const jdModal = document.getElementById('jd-modal');
   const closeModalBtn = document.getElementById('close-modal-btn');
   const modalApplyBtn = document.getElementById('modal-apply-btn');
@@ -182,7 +142,7 @@
     modalTitle.textContent = data.title;
     modalDeptTag.textContent = data.tag;
 
-    // Helper to render list
+    // Helper render
     function renderItems(container, items) {
       container.innerHTML = '';
       items.forEach(function (itemText) {

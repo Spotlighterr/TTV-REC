@@ -3,9 +3,8 @@
    Conforming to Apple Human Interface Guidelines (Apple HIG), Antislop & Ponytail
    ========================================================================== */
 
-/* 1. Design Tokens & Semantic Variables */
+/* 1. Design Tokens & Semantic Variables (Unified Clean Apple Palette) */
 :root {
-  /* Light Mode Palette (Default) */
   --bg-canvas: #F5F5F7;
   --bg-surface: #FFFFFF;
   --bg-surface-elevated: #FFFFFF;
@@ -46,35 +45,6 @@
   --transition-normal: 250ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Dark Mode Tokens */
-[data-theme="dark"] {
-  --bg-canvas: #000000;
-  --bg-surface: #1C1C1E;
-  --bg-surface-elevated: #2C2C2E;
-  --bg-header: rgba(28, 28, 30, 0.82);
-  --bg-input: #2C2C2E;
-  --bg-accent-subtle: rgba(223, 177, 91, 0.12);
-
-  --text-primary: #F5F5F7;
-  --text-secondary: #A1A1A6;
-  --text-tertiary: #6E6E73;
-  --text-inverse: #000000;
-
-  --brand-navy: #2997FF;
-  --brand-navy-hover: #147CE5;
-  --brand-accent: #DFB15B;
-  --brand-accent-hover: #E5BE6E;
-
-  --border-subtle: rgba(255, 255, 255, 0.12);
-  --border-medium: rgba(255, 255, 255, 0.22);
-
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
-
-  --focus-ring: #2997FF;
-}
-
 /* 2. Global Reset & Base Styles */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -99,7 +69,6 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
 main {
@@ -152,7 +121,6 @@ button {
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid var(--border-subtle);
-  transition: background-color var(--transition-normal), border-color var(--transition-normal);
 }
 
 .header-container {
@@ -208,40 +176,6 @@ button {
   gap: 16px;
 }
 
-.theme-toggle-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  color: var(--text-secondary);
-  border: 1px solid var(--border-subtle);
-  background-color: var(--bg-surface);
-  transition: all var(--transition-fast);
-}
-
-.theme-toggle-btn:hover {
-  color: var(--text-primary);
-  border-color: var(--border-medium);
-}
-
-.sun-icon {
-  display: none;
-}
-
-.moon-icon {
-  display: block;
-}
-
-[data-theme="dark"] .sun-icon {
-  display: block;
-}
-
-[data-theme="dark"] .moon-icon {
-  display: none;
-}
-
 .btn-cta-nav {
   display: inline-flex;
   align-items: center;
@@ -250,14 +184,10 @@ button {
   padding: 0 18px;
   font-size: 0.88rem;
   font-weight: 600;
-  color: var(--text-inverse);
+  color: #FFFFFF;
   background-color: var(--brand-navy);
   border-radius: var(--radius-btn);
   transition: background-color var(--transition-fast);
-}
-
-[data-theme="dark"] .btn-cta-nav {
-  color: #FFFFFF;
 }
 
 .btn-cta-nav:hover {
@@ -317,13 +247,9 @@ button {
   justify-content: center;
   min-height: 48px;
   font-weight: 600;
-  color: var(--text-inverse);
+  color: #FFFFFF;
   background-color: var(--brand-navy);
   border-radius: var(--radius-btn);
-}
-
-[data-theme="dark"] .btn-cta-mobile {
-  color: #FFFFFF;
 }
 
 /* 4. Hero Section */
@@ -357,34 +283,45 @@ button {
 }
 
 .hero-title {
-  font-size: 3.25rem;
+  font-size: 3.15rem;
   font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.025em;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
   color: var(--text-primary);
   max-width: 860px;
   margin-bottom: 20px;
 }
 
 .hero-subhead {
-  font-size: 1.25rem;
+  font-size: 1.22rem;
   font-weight: 400;
-  line-height: 1.55;
+  line-height: 1.6;
   color: var(--text-secondary);
-  max-width: 740px;
-  margin-bottom: 16px;
+  max-width: 760px;
+  margin-bottom: 24px;
+}
+
+.hero-quote-box {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 20px 28px;
+  max-width: 680px;
+  margin-bottom: 36px;
+  box-shadow: var(--shadow-sm);
+}
+
+.hero-quote {
+  font-style: italic;
+  font-size: 0.98rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin-bottom: 8px;
 }
 
 .hero-slogan {
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: 0.88rem;
   color: var(--brand-accent);
-  margin-bottom: 40px;
-  letter-spacing: 0.02em;
-}
-
-.slogan-bold {
-  font-weight: 700;
 }
 
 .hero-actions {
@@ -403,14 +340,10 @@ button {
   padding: 0 28px;
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text-inverse);
+  color: #FFFFFF;
   background-color: var(--brand-navy);
   border-radius: var(--radius-btn);
   transition: background-color var(--transition-fast), transform var(--transition-fast);
-}
-
-[data-theme="dark"] .btn-primary {
-  color: #FFFFFF;
 }
 
 .btn-primary:hover {
@@ -457,7 +390,7 @@ button {
 .section-title {
   font-size: 2.25rem;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.25;
   letter-spacing: -0.015em;
   color: var(--text-primary);
   margin-bottom: 16px;
@@ -596,7 +529,7 @@ button {
 }
 
 .dept-card-header {
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .dept-tag {
@@ -617,9 +550,21 @@ button {
 }
 
 .dept-summary {
-  font-size: 0.98rem;
+  font-size: 0.96rem;
   color: var(--text-secondary);
   line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.dept-encouragement {
+  background-color: var(--bg-canvas);
+  border-left: 3px solid var(--brand-accent);
+  border-radius: 4px;
+  padding: 10px 14px;
+  font-size: 0.88rem;
+  font-style: italic;
+  color: var(--text-primary);
+  line-height: 1.5;
   margin-bottom: 20px;
 }
 
@@ -669,12 +614,8 @@ button {
 
 .btn-view-jd:hover {
   background-color: var(--brand-navy);
-  color: var(--text-inverse);
-  border-color: var(--brand-navy);
-}
-
-[data-theme="dark"] .btn-view-jd:hover {
   color: #FFFFFF;
+  border-color: var(--brand-navy);
 }
 
 /* 8. Timeline Section */
