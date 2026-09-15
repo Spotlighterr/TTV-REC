@@ -15,7 +15,7 @@
         'Cùng nhau nghiên cứu, tìm hiểu các bài toán thực tế và thị trường bất động sản thông qua các buổi sinh hoạt chuyên môn ấm cúng.',
         'Lên ý tưởng và tham gia biên soạn đề bài cho cuộc thi The Real Contest, sân khấu học thuật BĐS sinh viên lớn nhất miền Bắc.',
         'Viết bài phân tích, chia sẻ kiến thức hữu ích qua các chuyên mục REnews, REstudy và cẩm nang sinh viên Tìm nhà cùng bạn.',
-        'Tham gia các chuyến Company Tour thực tế đến các dự án và tập đoàn bất động sản hàng đầu.'
+        'Tham gia The Real Seminar và các chuyến trải nghiệm thực tế đến các dự án bất động sản hàng đầu.'
       ],
       requirements: [
         'Không yêu cầu em phải có sẵn kiến thức sâu rộng về BĐS, chỉ cần em có tinh thần cầu tiến, ham học hỏi và chăm chỉ.',
@@ -72,7 +72,7 @@
       title: 'Ban Tổ chức',
       tag: 'Khung Xương Vận Hành',
       tasks: [
-        'Lên ý tưởng, kịch bản, timeline chi tiết và điều phối vận hành trực tiếp các sự kiện: The Real Contest, Talkshow, Company Tour.',
+        'Lên ý tưởng, kịch bản, timeline chi tiết và điều phối vận hành trực tiếp các sự kiện: The Real Contest, The Real Seminar, Talkshow chuyên môn.',
         'Quản lý ngân sách dự án, khảo sát địa điểm, chuẩn bị cơ sở vật chất, âm thanh, ánh sáng và hậu cần kỹ thuật.',
         'Chăm sóc đời sống tinh thần của thành viên, theo dõi tiến độ và gắn kết các ban trong câu lạc bộ.',
         'Đứng sau tổ chức các buổi bonding, dã ngoại, sinh nhật, prom và những đêm thức cùng nhau làm nên kỷ niệm thanh xuân.'
@@ -248,4 +248,54 @@
     }
   });
 
+  // --- Countdown Timer Controller ---
+  (function initCountdown() {
+    const daysEl = document.getElementById('cd-days');
+    const hoursEl = document.getElementById('cd-hours');
+    const minsEl = document.getElementById('cd-minutes');
+    const secsEl = document.getElementById('cd-seconds');
+
+    if (!daysEl || !hoursEl || !minsEl || !secsEl) return;
+
+    // Fixed recruitment application deadline: 14 days dynamic countdown
+    const STORAGE_KEY = 'rec_gen16_deadline_timestamp';
+    let targetTime = localStorage.getItem(STORAGE_KEY);
+
+    if (!targetTime) {
+      const now = new Date();
+      // Set to 14 days from initial access
+      const targetDate = new Date(now.getTime() + (14 * 24 * 60 * 60 * 1000));
+      targetTime = targetDate.getTime();
+      localStorage.setItem(STORAGE_KEY, targetTime);
+    } else {
+      targetTime = parseInt(targetTime, 10);
+      if (targetTime - Date.now() <= 0) {
+        // Roll forward 7 days if expired so countdown is active
+        targetTime = Date.now() + (7 * 24 * 60 * 60 * 1000);
+        localStorage.setItem(STORAGE_KEY, targetTime);
+      }
+    }
+
+    function padZero(val) {
+      return val < 10 ? '0' + val : val.toString();
+    }
+
+    function renderCountdown() {
+      const remaining = Math.max(0, targetTime - Date.now());
+      const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+
+      daysEl.textContent = padZero(days);
+      hoursEl.textContent = padZero(hours);
+      minsEl.textContent = padZero(minutes);
+      secsEl.textContent = padZero(seconds);
+    }
+
+    renderCountdown();
+    setInterval(renderCountdown, 1000);
+  })();
+
 })();
+
