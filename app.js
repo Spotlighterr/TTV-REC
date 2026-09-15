@@ -90,6 +90,45 @@
     }
   };
 
+  // --- Activities Tabs Controller (Ngoại Bộ / Nội Bộ) ---
+  const tabBtnNgoaiBo = document.getElementById('tab-btn-ngoai-bo');
+  const tabBtnNoiBo = document.getElementById('tab-btn-noi-bo');
+  const panelNgoaiBo = document.getElementById('panel-ngoai-bo');
+  const panelNoiBo = document.getElementById('panel-noi-bo');
+
+  function switchTab(activeTab) {
+    if (activeTab === 'ngoai-bo') {
+      tabBtnNgoaiBo.classList.add('active');
+      tabBtnNgoaiBo.setAttribute('aria-selected', 'true');
+      tabBtnNoiBo.classList.remove('active');
+      tabBtnNoiBo.setAttribute('aria-selected', 'false');
+
+      panelNgoaiBo.classList.add('active');
+      panelNgoaiBo.removeAttribute('hidden');
+      panelNoiBo.classList.remove('active');
+      panelNoiBo.setAttribute('hidden', '');
+    } else {
+      tabBtnNoiBo.classList.add('active');
+      tabBtnNoiBo.setAttribute('aria-selected', 'true');
+      tabBtnNgoaiBo.classList.remove('active');
+      tabBtnNgoaiBo.setAttribute('aria-selected', 'false');
+
+      panelNoiBo.classList.add('active');
+      panelNoiBo.removeAttribute('hidden');
+      panelNgoaiBo.classList.remove('active');
+      panelNgoaiBo.setAttribute('hidden', '');
+    }
+  }
+
+  if (tabBtnNgoaiBo && tabBtnNoiBo) {
+    tabBtnNgoaiBo.addEventListener('click', function () {
+      switchTab('ngoai-bo');
+    });
+    tabBtnNoiBo.addEventListener('click', function () {
+      switchTab('noi-bo');
+    });
+  }
+
   // --- Mobile Navigation Drawer ---
   const mobileMenuBtn = document.getElementById('mobile-menu-btn');
   const mobileDrawer = document.getElementById('mobile-drawer');
@@ -165,8 +204,8 @@
     }
   }
 
-  // View JD Buttons
-  const viewJdButtons = document.querySelectorAll('.btn-view-jd');
+  // View Details Buttons
+  const viewJdButtons = document.querySelectorAll('.btn-dept-detail');
   viewJdButtons.forEach(function (btn) {
     btn.addEventListener('click', function () {
       const targetDept = btn.getAttribute('data-target');
