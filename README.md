@@ -1,91 +1,69 @@
-# REC FTU - Cổng Tuyển Thành Viên Khóa Gen 16
+﻿# REC FTU — Từ thế giới, về Nhà REC
 
-Website chính thức cho chiến dịch Tuyển Thành viên Khóa Gen 16 của **CLB Nghiên cứu Thị trường Bất động sản (REC FTU)**, Trường Đại học Ngoại thương Hà Nội.
+Trải nghiệm tuyển thành viên Gen 16 của CLB Nghiên cứu Thị trường Bất động sản, Đại học Ngoại thương. React quản lý toàn bộ giao diện; Three.js dựng địa cầu, quỹ đạo, ảnh hoạt động và các mảnh ghép ban trong cùng một không gian.
 
-> **Tinh thần cốt lõi**: *"REC là nhà"*
+## Hành trình
 
----
+1. **Khởi hành:** địa cầu có texture bề mặt, normal map, phản sáng đại dương và lớp mây; bao quanh là trạm quỹ đạo có các khoang ghép và động cơ. Kéo để xoay hoặc bấm Hà Nội để chuyển chặng.
+2. **Việt Nam:** máy quay tiến gần Việt Nam, giữ hướng bắc ở phía trên và giới thiệu Nhà REC tại 91 Chùa Láng.
+3. **Dấu ấn:** ảnh hoạt động chuyển thành một vòng quỹ đạo. Dùng nút trước/sau, chọn dấu chấm hoặc bấm trực tiếp ảnh 3D để đọc câu chuyện.
+4. **Đồng đội:** chọn một trong bốn mô hình — cụm kiến trúc, máy ảnh, vệ tinh và sân khấu — để xem ở kích thước lớn. Kéo xoay để quan sát; bấm vật thể hoặc nút khám phá để đọc thông tin ban. Có nút trước/sau bên dưới mô hình.
+5. **Gia nhập:** mũ phi hành gia với vật liệu PBR xuất hiện trước đường chân trời địa cầu; mở thông tin tuyển thành viên và lộ trình bốn vòng.
 
-## Giới Thiệu Dự Án
+Cuộn thay đổi tiến độ máy quay trong một sân khấu cố định. Thanh điều hướng, menu di động và các phím mũi tên lên/xuống, Page Up/Down, Home/End cũng chuyển chặng. Các hộp thoại hỗ trợ Escape và khóa cuộn nền.
 
-Trang thông tin tuyển thành viên được xây dựng nhằm mang đến trải nghiệm trực quan, ấm áp và truyền cảm hứng cho các bạn sinh viên (đặc biệt là tân sinh viên Khóa 63 FTU) mong muốn tìm kiếm một môi trường học thuật thực chiến và gắn kết như một gia đình.
+## Chạy cục bộ
 
-Mã nguồn được thiết kế theo triết lý **Native Web & Sharp Editorial**:
-- Không phụ thuộc framework cồng kềnh (Zero external dependencies).
-- Tốc độ tải trang tức thì (< 0.5s), tối ưu SEO và thiết bị di động.
-- Đường nét sắc sảo, dứt khoát, phong cách báo chí - học thuật, loại bỏ hoàn toàn các kiểu thiết kế dập khuôn (không bo tròn bong bóng, không hiệu ứng mờ nhòe, không ô vuông to đùng).
+Yêu cầu Node.js 24 và npm.
 
----
-
-## Các Tính Năng & Phân Khu Nội Dung
-
-1. **Hero & Thông Điệp Chào Đón**:
-   - Khơi gợi hành trình đại học và khẳng định tinh thần *"REC là nhà"*.
-   - Lời nhắn gửi chân thành từ thế hệ đi trước.
-2. **Thông Báo Tuyển Sinh & Đồng Hồ Đếm Ngược**:
-   - Banner cảnh báo thời hạn nộp đơn Vòng 1 với độ tương phản cao.
-   - Đồng hồ đếm ngược trực tiếp (Ngày : Giờ : Phút : Giây) nhảy theo thời gian thực.
-3. **Giới Thiệu CLB (About Editorial)**:
-   - Thông tin trực thuộc Đoàn trường, lịch sử 15 thế hệ và tôn chỉ hoạt động.
-4. **Hoạt Động Của Câu Lạc Bộ (Tab Chuyển Đổi)**:
-   - **Ngoại bộ**: The Real Contest (cuộc thi BĐS sinh viên toàn quốc), The Maze (sự kiện giải mật mã trinh thám), FindX - Tìm nhà cùng bạn (dự án xã hội hỗ trợ tân sinh viên).
-   - **Nội bộ**: Secret Santa, Cựu kể em nghe, Đi chơi xa thường niên, Bonding ấm cúng, Rememe.
-   - Bộ sưu tập hình ảnh thực tế từ các mùa hoạt động và chuỗi hội thảo chuyên môn **The Real Seminar**.
-5. **Cơ Cấu 4 Ban & Mô Tả Chi Tiết (JD Dialog Modal)**:
-   - Ban Chuyên môn (Bộ não học thuật)
-   - Ban Truyền thông (Tiếng nói sáng tạo)
-   - Ban Đối ngoại (Cầu nối bản lĩnh)
-   - Ban Tổ chức (Khung xương vận hành)
-   - Hỗ trợ xem chi tiết nhiệm vụ, yêu cầu, quyền lợi bằng cửa sổ `<dialog>` tương tác mượt mà, hỗ trợ phím `Escape`.
-6. **Lộ Trình 4 Vòng Tuyển Chọn**:
-   - Vòng 1: Nộp đơn trực tuyến (Application Form)
-   - Vòng 2: Đánh giá năng lực & Làm việc nhóm
-   - Vòng 3: Phỏng vấn chuyên sâu
-   - Vòng 4: Chào đón thành viên mới & Training
-7. **Cổng Tiếp Nhận Hồ Sơ & Chân Trang**:
-   - Hướng dẫn chuẩn bị trước khi gửi đơn.
-   - Nút kết nối trực tiếp đến Google Forms chính thức.
-   - Thông tin liên hệ văn phòng CLB tại Trường ĐH Ngoại thương.
-
----
-
-## Cấu Trúc Thư Mục
-
-```text
-REC-tuyen-thanh-vien/
-├── index.html              # Cấu trúc HTML5 ngữ nghĩa chuẩn SEO & Accessibility
-├── style.css               # Hệ thống Style Editorial, biến màu CSS tokens
-├── app.js                  # Điều khiển tab hoạt động, modal JD, đồng hồ đếm ngược
-├── DESIGN.md               # Quy chuẩn thiết kế, bảng mã màu, triết lý Anti-Slop
-├── TASK.md                 # Kế hoạch công việc và lộ trình cập nhật
-├── activities_data.json    # Dữ liệu tổng hợp các hoạt động Ngoại bộ & Nội bộ
-├── assets/
-│   └── images/             # Hình ảnh hoạt động và tài nguyên đồ họa thực tế
-└── scripts/
-    └── fetch_activities.py # Công cụ tự động thu thập & cập nhật dữ liệu hoạt động
+```sh
+npm install
+npm run dev -- --port 5173
 ```
 
----
+Mở `http://localhost:5173/`. Trên PowerShell chặn `npm.ps1`, dùng `npm.cmd`.
 
-## Hướng Dẫn Chạy Cục Bộ (Local Development)
-
-Không cần cài đặt `npm install` hay build phức tạp. Bạn có thể mở trực tiếp hoặc chạy một máy chủ tĩnh nội bộ:
-
-### Cách 1: Sử dụng Python
-```bash
-py -m http.server 3000
-```
-Sau đó truy cập: `http://localhost:3000`
-
-### Cách 2: Sử dụng Node.js
-```bash
-npx serve . -p 3000
+```sh
+npm run build
+npm run preview
 ```
 
----
+Vite tạo bản triển khai trong `dist/`. Đường dẫn tài nguyên tương đối hỗ trợ GitHub Pages trong thư mục repository. Workflow `.github/workflows/deploy.yml` cài dependencies, build rồi đưa riêng `dist/` lên Pages khi có push vào `main`.
 
-## Đóng Góp & Bản Quyền
+## Cấu trúc
 
-- **Đơn vị phát triển**: Ban Điều hành CLB Nghiên cứu Thị trường Bất động sản (REC FTU).
-- **Trực thuộc**: Đoàn Trường Đại học Ngoại thương Hà Nội.
-- **Văn phòng**: Ô số 38, Nhà B, 91 Chùa Láng, Láng Thượng, Đống Đa, Hà Nội.
+- `index.html`: điểm vào, metadata và nội dung khi JavaScript bị tắt.
+- `src/App.jsx`: giao diện React, các chặng, điều hướng và hộp thoại.
+- `src/rec-world.jsx`: dựng địa cầu, ánh sáng môi trường, camera, thao tác kéo và chọn vật thể.
+- `src/department-models.js`: mô hình từng ban, gộp hình học theo vật liệu để giảm draw calls.
+- `src/scene-details.js`: điểm lục địa, đèn thành phố, radar, vệ tinh và hạt chạy theo đường nối.
+- `src/ambient-space.js`: tinh vân được vẽ sẵn, bụi sáng và vòng sáng không gian.
+- `src/orbital-station.js`: trạm quỹ đạo, bề mặt kim loại, luồng năng lượng, thiên thạch và sóng chuyển cảnh.
+- `assets/textures/`: texture địa cầu; nguồn ở `CREDITS.md`.
+- `public/models/scifi-helmet/`: mô hình CC0, được tải khi đến gần cảnh cuối; tác giả và các thay đổi texture ở `CREDITS.md`.
+- `src/world.css`: typography, bố cục toàn màn hình và responsive.
+- `src/content.js`: hoạt động, ảnh, các ban và cấu hình liên kết tuyển thành viên.
+- `src/data/world.json`: hình học địa lý được rút gọn từ Natural Earth.
+- `src/data/departments.json`: mô tả các ban kế thừa từ dự án.
+- `activities_data.json`, `assets/images/`: nội dung và ảnh hoạt động hiện có.
+- `app.js`, `style.css`: mã giao diện cũ được giữ để tham chiếu; không được trang mới tải.
+
+## Hiệu ứng và khả năng truy cập
+
+- Tôn trọng `prefers-reduced-motion`, có nút **Bật hiệu ứng / Giảm chuyển động** để lựa chọn.
+- DOM và WebGL dùng chung tiến độ được làm mượt; camera đi theo đường cong, kéo xoay có quán tính, ảnh chọn đường xoay ngắn nhất.
+- Vẽ trực tiếp với quầng sáng cục bộ; shadow map 1024px chỉ cập nhật khi xem mô hình ban. Giới hạn DPR theo số pixel, tự giảm độ phân giải sau nhiều khung hình chậm; ngừng vẽ khi tab bị ẩn hoặc cảnh đã đứng yên ở chế độ giảm chuyển động.
+- Các bảng dùng glassmorphism: nền trong, viền sáng và backdrop blur ở vùng nhỏ; không dùng bóng nổi/lõm kiểu neumorphism.
+- Font hệ thống Apple (`-apple-system`, `BlinkMacSystemFont`, SF Pro), với system-ui/Segoe UI dự phòng trên Windows. Không đóng gói hay tải font Apple từ bên ngoài.
+- Khi WebGL hoặc dữ liệu bản đồ không tải được, giao diện chuyển sang nền nhẹ và các nội dung vẫn dùng được.
+- Chữ, nút và nội dung hộp thoại là HTML; tương tác 3D đều có nút tương ứng.
+- Ảnh, dữ liệu bản đồ và mã đều được đóng gói trong bản build, không cần CDN khi chạy.
+- Trạm quỹ đạo, thiên thạch và mũ phi hành gia là hình ảnh giả tưởng của trải nghiệm khám phá, không phải cơ sở vật chất hay hoạt động có thật của REC.
+
+## Nội dung tuyển thành viên
+
+CTA hiện mở [fanpage REC FTU](https://www.facebook.com/FTU.REC). Liên kết Google Forms cũ là một URL chưa được xác thực, nên không dùng để tiếp nhận hồ sơ. Cập nhật `recruitmentUrl` trong `src/content.js` khi có đường dẫn chính thức. Trang không tạo thời hạn tuyển hay đồng hồ đếm ngược giả.
+
+## Nguồn dữ liệu địa lý
+
+Đường biên địa cầu lấy từ [Natural Earth — Admin 0, 1:110m](https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_110m_admin_0_countries.geojson), được giữ lại tên, mã nước và tọa độ rút gọn. Các đường nối chuyển động là phần minh họa cho hành trình khám phá, không mô tả mạng lưới đối tác của REC.

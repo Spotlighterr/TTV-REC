@@ -1,75 +1,33 @@
-# REC FTU Gen 16: Design System & Guidelines
+﻿# Từ thế giới, về Nhà REC
 
-Tài liệu định hướng thiết kế cho Website Tuyển thành viên Gen 16 của Câu lạc bộ Nghiên cứu Thị trường Bất động sản (REC FTU), Đại học Ngoại thương Hà Nội.
+## Trải nghiệm
 
----
+Một sân khấu WebGL cố định với năm chặng: địa cầu → Việt Nam / Hà Nội → ảnh hoạt động → các ban → gia nhập. Khi cuộn, máy quay, vị trí địa cầu và các vật thể nội suy giữa các chặng. Nội dung chữ xuất hiện theo từng cảnh.
 
-## 1. Định vị & Bộ ba thước đo (Design Read & Dials)
+## Ngôn ngữ hình ảnh
 
-* **Design Read**: Landing page tuyển sinh viên chính thức cho REC FTU Gen 16, hướng đến sinh viên Đại học Ngoại thương và các bạn trẻ có tư duy kinh doanh, đầu tư, phân tích thị trường bất động sản. Phong cách Apple Human Interface Guidelines (Apple HIG) kết hợp với tinh thần học thuật, thực chiến của REC.
-* **Bộ ba thước đo (Dials)**:
-  * **ENERGY: 2 (Cân bằng & Điềm đạm)**: Không sặc sỡ, không lòe loẹt như web crypto/gaming, giữ nét trang nhã, tin cậy của lĩnh vực tài chính và bất động sản cao cấp.
-  * **RHYTHM: 2 (Nhịp điệu biến chuyển có chủ đích)**: Cấu trúc mỗi phần thay đổi linh hoạt theo nhu cầu nội dung thực tế (Hero thoáng đãng, Thẻ ban chức năng bất đối xứng có điểm nhấn, Timeline phân tầng mạch lạc).
-  * **MOTION: 1 (Tối giản & Tinh tế)**: Chỉ sử dụng chuyển động vi mô (micro-interactions) cho các trạng thái hover, focus, active và mở modal. Không dùng animation bay lượn vô nghĩa hoặc vòng lặp vô tận.
+- Nền không gian #03080f, chữ trắng ngà, điểm nhấn đồng cam #ffa978; ánh sáng xanh cyan, tím và cam chia các lớp không gian.
+- Việt Nam và tín hiệu Hà Nội dùng màu cát vàng để phân biệt với biển xanh.
+- Địa cầu dùng ảnh bề mặt, normal map, bản đồ phản sáng và mây xoay độc lập; Việt Nam được đánh dấu bằng đường biên và tín hiệu Hà Nội. Trạm quỹ đạo ghép từ giáp, khe kỹ thuật, thanh giằng, khoang và động cơ.
+- Ánh sáng studio được tạo một lần làm bản đồ phản chiếu cho kim loại và kính; ánh sáng viền xanh–ấm tách mô hình khỏi nền. Tinh vân và bụi sao tạo chiều sâu, quầng sáng cục bộ thay bloom toàn màn hình.
+- Bốn mô hình theo ban được xem riêng ở kích thước lớn và kéo xoay: kiến trúc có mặt dựng và giằng, máy ảnh có vòng ống kính/khẩu độ/nút chỉnh, vệ tinh có pin và chảo thu, sân khấu có loa, LED và chùm đèn. Hình học tĩnh gộp theo sáu nhóm vật liệu, kèm vòng quét và đèn động. Shadow map giúp tạo bóng giữa các bộ phận.
+- Cảnh gia nhập dùng SciFiHelmet CC0 của Michael Pavlovic, chuyển glTF bởi Norbert Nopper, với bản đồ màu, normal, AO và metallic/roughness. Nguồn và thay đổi nằm cạnh tài nguyên.
+- Bảng, nút, menu và hộp thoại dùng kính trong, viền mảnh, blur có giới hạn. Không dùng bóng nổi/lõm neumorphism.
+- Tiêu đề sans serif lớn dùng font hệ thống Apple trên thiết bị Apple, system-ui/Segoe UI trên Windows; không tải hoặc phân phối font Apple. Chữ nhấn xanh sương, chữ phụ đủ tương phản.
+- Thanh điều hướng biểu thị các chặng của một hành trình; phần đọc luôn có độ tương phản rõ.
 
----
+## Chuyển động
 
-## 2. Bảng màu Semantic (Apple HIG Inspired)
+- Máy quay theo đường cong với cùng một đồng hồ nội suy cho HTML và WebGL. Các lớp nội dung được giữ sẵn để crossfade; không remount tiêu đề khi chuyển chặng.
+- Các vệt sao xuất hiện theo tốc độ chuyển cảnh, không có nhấp nháy liên tục.
+- Trạm xoay quanh địa cầu, mây trôi độc lập, ba luồng năng lượng chạy trong không gian, thiên thạch ở nhiều khoảng cách và sóng sáng mở rộng khi chuyển chặng. Mô hình ban xoay nhẹ; kéo để điều khiển hướng quan sát, bấm để đọc chi tiết. Chế độ giảm chuyển động dừng các hiệu ứng tự động.
+- Kéo địa cầu thay đổi góc nhìn; góc kéo tự trở về khi bắt đầu chuyển chặng để điểm đến vẫn đúng vị trí.
+- Hộp thoại tạm dừng các chuyển động nền. Thiết lập giảm chuyển động dừng chuyển động tự động và làm chuyển chặng trực tiếp.
 
-Hệ thống màu thích ứng tự nhiên với cả chế độ Sáng (Light Mode) và Tối (Dark Mode), đạt chuẩn tương phản tối thiểu WCAG AA (4.5:1 cho văn bản thông thường, 3:1 cho tiêu đề lớn).
+## Responsive và tương tác
 
-### Chế độ Sáng (Light Mode)
-* **Canvas Background**: `#F5F5F7` (Apple Light Gray Canvas)
-* **Surface Background (Cards / Panels)**: `#FFFFFF` (Pure White)
-* **Glass Header**: `rgba(255, 255, 255, 0.72)` kèm `backdrop-filter: blur(20px)`
-* **Primary Text**: `#1D1D1F` (Apple Deep Charcoal, tương phản 16:1)
-* **Secondary Text**: `#6E6E73` (Apple Neutral Gray, tương phản 4.8:1)
-* **Tertiary / Border**: `rgba(0, 0, 0, 0.08)`
-* **Brand Primary (Navy REC)**: `#002B49` (Navy Ngoại thương truyền thống)
-* **Brand Accent (Warm Gold)**: `#B8860B` / `#C5A059` (Điểm nhấn bất động sản cao cấp)
-* **Interactive Focus Outline**: `#0071E3` (Apple System Blue)
+Desktop bố trí chữ bên trái, địa cầu / các vật thể phía phải. Trên điện thoại, cảnh nằm ở nửa trên và nội dung phía dưới, có gradient để bảo đảm khả năng đọc. Mọi chặng có điều hướng bằng nút; các đối tượng 3D đều có lựa chọn HTML tương ứng. Hộp thoại dùng phần tử dialog để hỗ trợ bàn phím, focus và Escape.
 
-### Chế độ Tối (Dark Mode)
-* **Canvas Background**: `#000000` (Apple True Black Canvas)
-* **Surface Background (Cards / Panels)**: `#1C1C1E` (Apple System Dark Gray)
-* **Glass Header**: `rgba(28, 28, 30, 0.75)` kèm `backdrop-filter: blur(20px)`
-* **Primary Text**: `#F5F5F7` (Apple Off-White, tương phản 17:1)
-* **Secondary Text**: `#A1A1A6` (Apple Dark Mode Secondary, tương phản 5.2:1)
-* **Tertiary / Border**: `rgba(255, 255, 255, 0.12)`
-* **Brand Primary (Navy REC)**: `#2997FF` (Tương phản sáng trên nền tối)
-* **Brand Accent (Warm Gold)**: `#DFB15B` (Ánh kim ấm áp trên nền tối)
-* **Interactive Focus Outline**: `#2997FF`
+## Quy tắc nội dung
 
----
-
-## 3. Hệ thống Typography (Apple SF Pro Scale)
-
-* **Font Stack**: `-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif`
-* **Cấp bậc văn bản**:
-  * **Large Hero Title**: `48px - 56px`, Font Weight 700, Line Height 1.1, Letter Spacing `-0.015em`
-  * **Section Title**: `32px - 40px`, Font Weight 600, Line Height 1.2, Letter Spacing `-0.01em`
-  * **Card Title / Subhead**: `20px - 24px`, Font Weight 600, Line Height 1.3
-  * **Body Text**: `16px - 17px`, Font Weight 400, Line Height 1.5, Letter Spacing `-0.005em`
-  * **Caption / Meta**: `13px - 14px`, Font Weight 500, Line Height 1.4
-
----
-
-## 4. Bố cục & Thang đo (Layout & Spacing Grid)
-
-* **Grid cơ sở**: Hệ số 8pt (8px, 16px, 24px, 32px, 48px, 64px, 96px).
-* **Độ bo góc (Corner Radii)**:
-  * Thẻ nội dung (Cards): `20px`
-  * Nút bấm (Buttons): `12px` (không dùng bo tròn kiểu viên thuốc cho mọi nút)
-  * Khung nhập liệu / Tag: `8px`
-  * Cửa sổ thông tin (Modal Dialog): `24px`
-* **Vùng tương tác chạm (Touch Target)**: Tối thiểu `44px x 44px` trên thiết bị di động.
-
----
-
-## 5. Quy tắc Nghiêm ngặt Antislop
-
-1. **Tuyệt đối không dùng dấu gạch ngang em dash (`—`)** trong văn bản giao diện.
-2. **Không dùng từ ngữ AI sáo rỗng**: Tránh các từ như "bứt phá", "chuyển mình", "khai phóng", "hành trình diệu kỳ". Dùng ngôn ngữ thực tế, gãy gọn.
-3. **Không dùng emoji trang trí rải rác** trên tiêu đề hay nút bấm.
-4. **Không bịa đặt số liệu hoặc đánh giá giả**: Mọi thông tin đều gắn liền với hoạt động thực tế của REC FTU.
-5. **Không để nút chết**: Mọi liên kết đều có điểm đến thực tế hoặc mở chức năng cụ thể.
+Giữ giọng nói gần gũi với sinh viên. Dùng ảnh và mô tả sẵn có của REC. Không tạo số liệu thành tích, hạn tuyển, năm thành lập hay liên kết nhận đơn mới. Các chi tiết tuyển thành viên cần được đối chiếu với fanpage trước khi đưa trang vào chiến dịch chính thức.
