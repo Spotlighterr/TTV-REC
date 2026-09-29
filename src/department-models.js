@@ -35,19 +35,6 @@ export function createDepartmentModel(index, accent) {
     geometry.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), delta.normalize()));
     add(type, geometry, a.add(b).multiplyScalar(.5).toArray());
   };
-  // Machined exhibition base: stacked edge, radial engravings and a luminous inset.
-  cylinder('dark', 1.07, 1.02, .14, [0, -.8, 0]);
-  cylinder('dark', 1.045, 1.045, .035, [0, -.71, 0]);
-  ring('light', 1.018, .012, [0, -.688, 0], [Math.PI / 2, 0, 0]);
-  for (let i = 0; i < 36; i++) {
-    const a = i / 36 * Math.PI * 2;
-    box(i % 3 ? 'shell' : 'light', [.009, .008, i % 3 ? .055 : .09], [Math.sin(a) * .92, -.687, Math.cos(a) * .92], [0, a, 0]);
-    if (i % 3 === 0) {
-      cylinder('gold', .013, .013, .012, [Math.sin(a) * .98, -.68, Math.cos(a) * .98], undefined, 8);
-      box('shell', [.08, .09, .13], [Math.sin(a) * 1.03, -.79, Math.cos(a) * 1.03], [0, a, 0]);
-    }
-  }
-
   if (index === 0) {
     // An architectural study: stepped towers, curtain walls, terraces and roof plant.
     box('white', [1.32, .1, .94], [0, -.61, 0]);
@@ -133,36 +120,20 @@ export function createDepartmentModel(index, accent) {
     }
     for (let i = 0; i < 6; i++) box('dark', [.034, .12, .009], [-.13 + Math.sin(i / 6 * Math.PI * 2) * .11, Math.cos(i / 6 * Math.PI * 2) * .11, .862], [0, 0, -i / 6 * Math.PI * 2 - .45]);
   } else if (index === 2) {
-    // Communications satellite with tiled arrays, foil panels and a parabolic dish.
-    rounded('gold', [.63, .7, .56], [0, .12, 0], .045);
-    for (let i = 0; i < 6; i++) box('shell', [.61, .025, .012], [0, -.14 + i * .105, .287]);
-    for (const side of [-1, 1]) {
-      bar('shell', [side * .3, .12, 0], [side * 1.32, .12, 0], .035);
-      box('shell', [.62, .045, 1.13], [side * .97, .12, 0]);
-      for (let x = 0; x < 3; x++) for (let z = 0; z < 6; z++) {
-        box('glass', [.176, .013, .158], [side * .97 + (x - 1) * .193, .15, (z - 2.5) * .177]);
-        box('light', [.15, .003, .004], [side * .97 + (x - 1) * .193, .159, (z - 2.5) * .177]);
-      }
-      cylinder('dark', .075, .075, .12, [side * .42, .12, 0], [0, 0, Math.PI / 2]);
+    // A sponsorship proposal folder with a page, section rules and signature.
+    box('dark', [1.38, 1.92, .12], [0, .03, -.12]);
+    box('shell', [1.28, 1.82, .025], [0, .03, -.045]);
+    box('white', [1.12, 1.62, .025], [.045, .05, -.012]);
+    box('gold', [.065, 1.62, .03], [-.482, .05, .01]);
+    box('light', [.63, .045, .015], [-.105, .68, .015]);
+    for (let i = 0; i < 5; i++) {
+      const width = i === 0 ? .76 : .82 - (i % 2) * .12;
+      box('shell', [width, .018, .012], [-.07, .43 - i * .16, .015]);
     }
-    const profile = Array.from({ length: 13 }, (_, i) => { const r = i / 12 * .47; return new THREE.Vector2(r, .48 + r * r * .68); });
-    add('white', new THREE.LatheGeometry(profile, 40));
-    ring('gold', .47, .014, [0, .63, 0], [Math.PI / 2, 0, 0]);
-    for (let i = 0; i < 3; i++) { const a = i / 3 * Math.PI * 2; bar('shell', [Math.sin(a) * .43, .61, Math.cos(a) * .43], [0, 1.02, 0], .012); }
-    cylinder('gold', .046, .065, .13, [0, 1.01, 0]);
-    bar('shell', [.25, .38, -.2], [.38, 1.11, -.2], .009);
-    add('light', new THREE.SphereGeometry(.03, 10, 8), [.38, 1.11, -.2]);
-    for (const x of [-.21, .21]) cylinder('dark', .07, .13, .18, [x, -.32, 0]);
-    cylinder('shell', .13, .19, .2, [0, -.56, 0]);
-    for (const x of [-.33, .33]) {
-      box('white', [.016, .67, .57], [x, .12, 0]);
-      for (let i = 0; i < 9; i++) box('dark', [.019, .018, .46], [x * 1.035, -.16 + i * .067, 0]);
-      bar('gold', [x, -.15, -.29], [x, .4, -.29], .018);
-    }
-    for (let i = 0; i < 18; i++) {
-      const a = i / 18 * Math.PI * 2;
-      bar('shell', [0, .478, 0], [Math.sin(a) * .458, .622, Math.cos(a) * .458], .004);
-    }
+    box('gold', [.3, .09, .035], [.36, .79, .018]);
+    bar('light', [-.3, -.39, .04], [-.04, -.46, .04], .022);
+    bar('shell', [-.04, -.46, .04], [.14, -.38, .04], .018);
+    bar('light', [.38, -.55, .055], [.56, -.18, .055], .024);
   } else {
     // Event pavilion: truss structure, LED wall, line arrays, stairs and stage lights.
     box('dark', [1.6, .13, 1.03], [0, -.52, 0]);
@@ -207,8 +178,6 @@ export function createDepartmentModel(index, accent) {
     mesh.castShadow = true; mesh.receiveShadow = true;
     mesh.userData.pick = { kind: 'department', index }; group.add(mesh);
   });
-  const scanner = new THREE.Mesh(new THREE.TorusGeometry(.99, .008, 5, 100), new THREE.MeshBasicMaterial({ color: accent, transparent: true, opacity: .45, depthWrite: false, blending: THREE.AdditiveBlending }));
-  scanner.rotation.x = Math.PI / 2; group.add(scanner);
   const beams = [];
   if (index === 3) {
     for (let i = 0; i < 3; i++) {
@@ -223,8 +192,6 @@ export function createDepartmentModel(index, accent) {
     }
   }
   return { group, accentMaterial: materials.light, update(time) {
-    scanner.position.y = -.67 + ((time * .18) % 1) * 1.7;
-    scanner.scale.setScalar(.9 + Math.sin(time * .6) * .05);
     beams.forEach((beam, i) => { beam.rotation.z = Math.sin(time * .7 + i * 2) * .18; });
   } };
 }

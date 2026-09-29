@@ -4,21 +4,21 @@
       "id": "the-real-contest",
       "name": "The Real Contest",
       "tag": "Cuộc thi Bất động sản quy mô toàn quốc",
-      "desc": "Cuộc thi học thuật và thực chiến về lĩnh vực Bất động sản thường niên đầu tiên và uy tín nhất dành cho sinh viên kinh tế. Nơi các đội thi giải quyết các bài toán kinh doanh, marketing, sales và tư vấn đầu tư dự án thực tế từ các tập đoàn hàng đầu.",
+      "desc": "Một cuộc thi để em thử sức với những bài toán thật về bất động sản. Cùng đồng đội, em tìm lời giải cho các vấn đề kinh doanh, marketing, bán hàng và tư vấn đầu tư dự án.",
       "scale": "Toàn quốc (Hà Nội, TP.HCM và các tỉnh thành)"
     },
     {
       "id": "the-maze",
       "name": "The Maze",
       "tag": "Chuỗi thử thách giải mật mã & Định hướng",
-      "desc": "Chuỗi sự kiện thực tế mang phong cách trinh thám, giải mã bí ẩn kết hợp teambuilding độc đáo của REC. Thử thách tư duy logic, phản xạ nhanh và tinh thần đồng đội của các bạn trẻ qua từng chặng đua gay cấn.",
+      "desc": "REC rủ em cùng đồng đội lần theo manh mối, giải mật mã và vượt qua những thử thách thực tế. Vừa vận động, vừa xem cả nhóm phối hợp ăn ý đến đâu.",
       "scale": "Quy mô sinh viên Ngoại thương và các trường đại học"
     },
     {
       "id": "findx",
       "name": "FindX - Tìm nhà cùng bạn",
       "tag": "Dự án cẩm nang cộng đồng sinh viên",
-      "desc": "Dự án phi lợi nhuận ý nghĩa của REC nhằm hỗ trợ các bạn tân sinh viên tìm kiếm nhà trọ an toàn, minh bạch, tránh lừa đảo quanh khu vực Chùa Láng và các quận lân cận. Cung cấp cẩm nang pháp lý thuê trọ và bản đồ nhà ở uy tín.",
+      "desc": "Tụi mình làm FindX để giúp em tìm chỗ trọ an toàn, minh bạch quanh Chùa Láng và các quận lân cận. Dự án có cẩm nang thuê trọ và bản đồ những lựa chọn đáng tin cậy.",
       "scale": "Cộng đồng tân sinh viên và sinh viên Hà Nội"
     }
   ],
@@ -27,31 +27,31 @@
       "id": "secret-santa",
       "name": "Secret Santa",
       "tag": "Giáng sinh Nhà REC",
-      "desc": "Truyền thống Noel ấm áp mỗi dịp cuối năm. Các thành viên bốc thăm ngẫu nhiên để trở thành 'ông già Noel bí mật', chuẩn bị những món quà bất ngờ kèm những lá thư tay chan chứa tình cảm cho người anh em cùng nhà."
+      "desc": "Mỗi mùa Noel, tụi mình bốc thăm người nhận quà, tự tay chuẩn bị món bất ngờ và viết vài dòng gửi nhau. Nhỏ thôi mà ấm cả mùa đông."
     },
     {
       "id": "cuu-ke-em-nghe",
       "name": "Cựu kể em nghe",
       "tag": "Chuyện nghề & Chuyện đời cùng Alumni",
-      "desc": "Không gian trò chuyện thân mật giữa các thế hệ cựu thành viên (Alumni) kỳ cựu và thế hệ đàn em. Nơi chia sẻ thật nhất về con đường học tập tại FTU, kinh nghiệm thực tập tại các tập đoàn lớn, chuyện nghề BĐS và định hướng tương lai."
+      "desc": "Các anh chị cựu thành viên ngồi lại kể em nghe chuyện học ở FTU, đi thực tập, làm nghề bất động sản và chọn hướng đi cho riêng mình."
     },
     {
       "id": "di-choi-xa",
       "name": "Đi chơi xa",
       "tag": "Chuyến du lịch gia đình thường niên",
-      "desc": "Chuyến 'trốn phố về biển' hoặc 'lên núi săn mây' hàng năm của đại gia đình REC. Cùng nhau rời xa deadline, thức thâu đêm trò chuyện bên bờ biển, nướng BBQ và tạo nên những kỷ niệm thanh xuân đẹp đẽ nhất."
+      "desc": "Một chuyến đi để cả nhà REC tạm rời lịch học và deadline, ngồi nói chuyện thật lâu, ăn BBQ và có thêm kỷ niệm cùng nhau."
     },
     {
       "id": "bonding-noi-bo",
       "name": "Bonding nội bộ",
       "tag": "Những buổi tụ tập sau giờ học",
-      "desc": "Những buổi lẩu đêm Chùa Láng, trà chanh vỉa hè, boardgame cười nghiêng ngả, sinh nhật thành viên hàng tháng và những buổi offline ngẫu hứng sau khi hoàn thành các dự án lớn."
+      "desc": "Có khi là nồi lẩu đêm ở Chùa Láng, ván boardgame cười nghiêng ngả, sinh nhật thành viên hay buổi tụ tập ngẫu hứng sau một dự án. Mấy lúc giản dị vậy mà vui lâu lắm."
     },
     {
       "id": "rememe",
       "name": "Rememe",
       "tag": "Góc giải trí & Kỷ niệm khó đỡ",
-      "desc": "Đặc sản giải trí không thể thiếu của Nhà REC. Nơi lưu giữ những khoảnh khắc 'dìm hàng' siêu đáng yêu, các meme độc quyền trong các buổi chạy sự kiện, đem lại tiếng cười sảng khoái và xua tan mọi áp lực."
+      "desc": "Góc lưu lại những khoảnh khắc hài hước, meme nội bộ và chuyện vui trong lúc chạy sự kiện. Mở ra xem lúc nào cũng có cái để cười."
     }
   ]
 }

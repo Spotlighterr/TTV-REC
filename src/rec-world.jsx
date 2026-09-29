@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { createDepartmentModel } from './department-models';
 import { createAmbientSpace } from './ambient-space';
 import { createOrbitalStation, createFlightEffects } from './orbital-station';
@@ -12,7 +11,7 @@ import earthWaterUrl from '../assets/textures/earth-water.jpg';
 import earthCloudsUrl from '../assets/textures/earth-clouds.png';
 import { createCityLights, createOrbitalDetails, createRouteParticles, createRadar } from './scene-details';
 import worldUrl from './data/world.json?url';
-import { photos } from './content';
+import { activities } from './content';
 
 const R = 3.15;
 const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
@@ -42,6 +41,33 @@ function labelSprite(text) {
   return sprite;
 }
 
+function archipelagoMarker(text, lon, lat, labelOffset) {
+  const point = geographic(lon, lat, R + 0.045);
+  const marker = new THREE.Group();
+  marker.position.copy(point);
+  marker.quaternion.setFromUnitVectors(V(0, 0, 1), point.clone().normalize());
+
+  const halo = new THREE.Mesh(
+    new THREE.RingGeometry(0.075, 0.09, 40),
+    new THREE.MeshBasicMaterial({ color: 0xffbd83, transparent: true, opacity: 0.9, side: THREE.DoubleSide, depthWrite: false }),
+  );
+  halo.position.z = 0.012;
+  marker.add(halo);
+
+  const center = new THREE.Mesh(
+    new THREE.SphereGeometry(0.035, 12, 8),
+    new THREE.MeshBasicMaterial({ color: 0xffe2bd }),
+  );
+  center.position.z = 0.025;
+  marker.add(center);
+
+  const label = labelSprite(text);
+  label.scale.set(0.9, 0.135, 1);
+  label.position.set(labelOffset[0], labelOffset[1], 0.05);
+  marker.add(label);
+  return marker;
+}
+
 export default function RecWorld({ progress, state, pinRef, onReady, onFailure, onPick }) {
   const canvasRef = useRef(null);
   useEffect(() => {
@@ -52,7 +78,7 @@ export default function RecWorld({ progress, state, pinRef, onReady, onFailure, 
     } catch { onFailure(); return undefined; }
     let disposed = false, needsRender = true;
     const mobile = () => window.innerWidth < 760;
-    const dprLimit = () => Math.min(devicePixelRatio, mobile() ? 1.3 : 1.5, Math.sqrt(1800000 / (innerWidth * innerHeight)));
+    const dprLimit = () => Math.min(devicePixelRatio, mobile() ? 1.3 : 1.5, Math.sqrt(1500000 / (innerWidth * innerHeight)));
     let renderDpr = dprLimit(), qualityScale = 1;
     renderer.setPixelRatio(renderDpr); renderer.setSize(innerWidth, innerHeight, false);
     renderer.setClearColor(0x03080f);
@@ -63,7 +89,7 @@ export default function RecWorld({ progress, state, pinRef, onReady, onFailure, 
     const studio = new RoomEnvironment();
     const pmrem = new THREE.PMREMGenerator(renderer);
     const environment = pmrem.fromScene(studio, .04, .1, 100, { size: 128 });
-    scene.environment = environment.texture; scene.environmentIntensity = .65;
+    scene.environment = environment.texture; scene.environmentIntensity = .5;
     studio.dispose(); pmrem.dispose();
     const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 180);
     camera.position.set(0, 0, 12.5);
@@ -73,9 +99,9 @@ export default function RecWorld({ progress, state, pinRef, onReady, onFailure, 
     sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024);
     Object.assign(sun.shadow.camera, { left: -5, right: 5, top: 5, bottom: -5, near: 1, far: 30 });
     sun.shadow.bias = -.0003; sun.shadow.normalBias = .025;
-    const blueLight = new THREE.DirectionalLight(0x1bcfff, 2.3); blueLight.position.set(-7, -2, 1); scene.add(blueLight);
-    const rimLight = new THREE.DirectionalLight(0xff6830, 3.8); rimLight.position.set(4, 5, -5); scene.add(rimLight);
-    const violetLight = new THREE.DirectionalLight(0x9564ff, 1.2); violetLight.position.set(7, -4, 4); scene.add(violetLight);
+    const blueLight = new THREE.DirectionalLight(0x62a9c6, 1.55); blueLight.position.set(-7, -2, 1); scene.add(blueLight);
+    const rimLight = new THREE.DirectionalLight(0xd99568, 2.2); rimLight.position.set(4, 5, -5); scene.add(rimLight);
+    const violetLight = new THREE.DirectionalLight(0x766c9a, 0.45); violetLight.position.set(7, -4, 4); scene.add(violetLight);
 
     const earthRig = new THREE.Group(); scene.add(earthRig);
     const earthSpin = new THREE.Group(); earthRig.add(earthSpin);
@@ -100,25 +126,15 @@ export default function RecWorld({ progress, state, pinRef, onReady, onFailure, 
     const ambientSpace = createAmbientSpace(glowMap); scene.add(ambientSpace.group);
     const station = createOrbitalStation(glowMap); earthRig.add(station.group);
     const flight = createFlightEffects(glowMap, mobile()); scene.add(flight.group);
-    const expedition = new THREE.Group(); scene.add(expedition);
-    let helmetRequested = false, helmetMaterials = [];
-    const loadHelmet = () => {
-      helmetRequested = true;
-      new GLTFLoader().load(new URL(`${import.meta.env.BASE_URL}models/scifi-helmet/SciFiHelmet.gltf`, document.baseURI).href, gltf => {
-        if (disposed) {
-          gltf.scene.traverse(object => { object.geometry?.dispose(); if (object.material) { Object.values(object.material).forEach(value => { if (value?.isTexture) value.dispose(); }); object.material.dispose(); } });
-          return;
-        }
-        const bounds = new THREE.Box3().setFromObject(gltf.scene), size = bounds.getSize(V()), center = bounds.getCenter(V());
-        gltf.scene.position.sub(center); const normalized = new THREE.Group(); normalized.add(gltf.scene); normalized.scale.setScalar(4.6 / size.y); expedition.add(normalized);
-        gltf.scene.traverse(object => { if (object.isMesh) { object.material.envMapIntensity = 1.4; helmetMaterials.push(object.material); } });
-        needsRender = true;
-      }, undefined, () => { needsRender = true; });
-    };
     const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowMap, color: 0x196bad, transparent: true, opacity: 0.3, depthWrite: false, blending: THREE.AdditiveBlending }));
     glow.scale.set(13.5, 13.5, 1); glow.position.z = -2.7; earthRig.add(glow);
     const orbitalDetails = createOrbitalDetails(R); earthRig.add(orbitalDetails.group);
     earthSpin.add(createCityLights(glowMap, R));
+    const archipelagoMarkers = [
+      archipelagoMarker('HOÀNG SA', 111.6019, 16.5333, [0.25, 0.02]),
+      archipelagoMarker('TRƯỜNG SA', 111.9167, 8.6333, [0.14, -0.19]),
+    ];
+    archipelagoMarkers.forEach(marker => earthSpin.add(marker));
 
     const north = geographic(105.8542, 21.0285, R + 0.045);
     const pin = new THREE.Group(); pin.position.copy(north); pin.quaternion.setFromUnitVectors(V(0, 0, 1), north.clone().normalize()); earthSpin.add(pin);
@@ -180,14 +196,14 @@ export default function RecWorld({ progress, state, pinRef, onReady, onFailure, 
     const photoCards = [];
     const textures = [];
     const textureLoader = new THREE.TextureLoader();
-    photos.forEach((url, i) => {
+    activities.forEach((activity, i) => {
       const group = new THREE.Group(); gallery.add(group);
-      const image = textureLoader.load(url, () => { needsRender = true; }); image.colorSpace = THREE.SRGBColorSpace; textures.push(image);
-      const material = new THREE.MeshBasicMaterial({ map: image, transparent: true, toneMapped: false });
-      const card = new THREE.Mesh(new THREE.PlaneGeometry(3.5, 2.35), material); card.position.z = .075; card.userData.pick = { kind: 'activity', index: i }; group.add(card); interactives.push(card);
-      const frame = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(3.58, 2.43, 0.04)), new THREE.LineBasicMaterial({ color: 0xb0d9eb, transparent: true, opacity: 0.6 })); group.add(frame);
-      const housing = new THREE.Mesh(new RoundedBoxGeometry(3.67, 2.52, .12, 2, .055), new THREE.MeshStandardMaterial({ color: 0x233449, metalness: .8, roughness: .24 })); group.add(housing);
-      const tag = labelSprite(`0${i + 1} / REC ARCHIVE`); tag.position.y = -1.5; group.add(tag);
+      const image = textureLoader.load(activity.image, () => { needsRender = true; }); image.colorSpace = THREE.SRGBColorSpace; textures.push(image);
+      const material = new THREE.MeshBasicMaterial({ map: image, color: 0xf3eee4, transparent: true, toneMapped: false });
+      const card = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 1.14), material); card.position.z = .045; card.userData.pick = { kind: 'activity', index: i }; group.add(card); interactives.push(card);
+      const frame = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.78, 1.22, 0.035)), new THREE.LineBasicMaterial({ color: 0xc0ad93, transparent: true, opacity: 0.42 })); group.add(frame);
+      const housing = new THREE.Mesh(new RoundedBoxGeometry(1.86, 1.3, .08, 1, .025), new THREE.MeshStandardMaterial({ color: 0x222a30, metalness: .35, roughness: .48 })); group.add(housing);
+      const tag = labelSprite(`0${i + 1} / REC ARCHIVE`); tag.position.y = -0.91; group.add(tag);
       photoCards.push(group);
     });
 
@@ -315,7 +331,7 @@ export default function RecWorld({ progress, state, pinRef, onReady, onFailure, 
       const rawDelta = now - previousTime;
       const dt = Math.min(rawDelta / 1000, 0.1); previousTime = now;
       if (document.hidden) return;
-      const freeze = state.current.paused || state.current.modal;
+      const freeze = state.current.modal;
       const speed = Math.abs(progress.current - currentProgress);
       const pointerMoving = easedPointer.distanceToSquared(pointer) > 0.00001;
       if (lastFocus !== state.current.focusRequest) { targetYaw = targetPitch = yawVelocity = 0; lastFocus = state.current.focusRequest; needsRender = true; flight.pulse(); }
@@ -326,13 +342,8 @@ export default function RecWorld({ progress, state, pinRef, onReady, onFailure, 
       if (!freeze) time += dt;
       currentProgress = progress.current;
       const p = THREE.MathUtils.clamp(currentProgress, 0, 4), from = Math.min(3, Math.floor(p)), to = from + 1, t = smooth(p - from);
-      if (p > 2.55 && !helmetRequested) loadHelmet();
-      const expeditionVisibility = smooth(THREE.MathUtils.clamp((p - 3.35) / .65, 0, 1));
-      expedition.visible = expeditionVisibility > .01;
-      expedition.position.set(mobile() ? 0 : 3.15, mobile() ? 2.8 : .05, 0);
-      expedition.scale.setScalar((mobile() ? .55 : 1) * (.92 + .08 * expeditionVisibility));
-      expedition.rotation.set(modelPitch * .25, Math.PI + modelYaw * .5 + Math.sin(time * .18) * .13, Math.sin(time * .25) * .025);
-      helmetMaterials.forEach(material => { material.transparent = expeditionVisibility < .99; material.opacity = expeditionVisibility; });
+      const archipelagoScene = (p > 0.55 && p < 1.55) || p > 3.35;
+      archipelagoMarkers.forEach(marker => { marker.visible = archipelagoScene; });
       earthPath.getPoint(p / 4, earthRig.position);
       earthRig.scale.setScalar(THREE.MathUtils.lerp(frames[from].scale, frames[to].scale, t));
       cameraPath.getPoint(p / 4, camera.position);
@@ -373,20 +384,24 @@ export default function RecWorld({ progress, state, pinRef, onReady, onFailure, 
 
       const galleryVisibility = 1 - Math.min(1, Math.abs(p - 2) * 1.8);
       fade(gallery, smooth(galleryVisibility));
-      gallery.position.set(mobile() ? 0 : 3.1, mobile() ? 2.9 : 0.2, 0);
+      gallery.position.set(mobile() ? 0 : 4.05, mobile() ? 2.9 : 0.2, 0);
       gallery.scale.setScalar(mobile() ? 0.65 : 1);
-      const desiredRotation = state.current.activity * -Math.PI * 2 / 5;
+      const desiredRotation = state.current.activity * -Math.PI * 2 / activities.length;
       const angleDelta = Math.atan2(Math.sin(desiredRotation - rotation), Math.cos(desiredRotation - rotation));
       rotation += angleDelta * (freeze ? 1 : 1 - Math.exp(-dt * 8));
       photoCards.forEach((card, i) => {
-        const angle = i / 5 * Math.PI * 2 + rotation;
-        card.position.set(Math.sin(angle) * 3.1, Math.sin(angle * 2 + time * 0.23) * 0.5, Math.cos(angle) * 2.4);
+        const offset = (i - state.current.activity + activities.length) % activities.length;
+        const distanceFromActive = Math.min(offset, activities.length - offset);
+        card.visible = distanceFromActive <= 2;
+        const angle = i / activities.length * Math.PI * 2 + rotation;
+        card.position.set(Math.sin(angle) * 4, Math.sin(angle * 2 + time * 0.16) * 0.2, Math.cos(angle) * 3.2);
         card.rotation.set(Math.sin(time * 0.3 + i) * 0.025, Math.sin(angle) * -0.28, Math.sin(angle) * 0.06);
         const isHovered = hovered?.kind === 'activity' && hovered.index === i;
-        const targetScale = (i === state.current.activity ? 1.05 : 0.8) + (isHovered ? 0.045 : 0);
+        const isActive = i === state.current.activity;
+        const targetScale = (isActive ? 0.98 : 0.7) + (isHovered ? 0.04 : 0);
         card.scale.setScalar(freeze ? targetScale : THREE.MathUtils.damp(card.scale.x, targetScale, 9, dt));
-        card.children[1].material.color.setHex(isHovered ? 0xf0e5ca : 0xb0d9eb);
-        card.children[0].material.opacity = smooth(galleryVisibility) * (i === state.current.activity ? 1 : .75);
+        card.children[1].material.color.setHex(isActive || isHovered ? 0xe1bd93 : 0x8a9498);
+        card.children[0].material.opacity = smooth(galleryVisibility) * (isActive ? 1 : .38);
       });
       const constellationVisibility = 1 - Math.min(1, Math.abs(p - 3) * 1.8);
       fade(constellation, smooth(constellationVisibility));
