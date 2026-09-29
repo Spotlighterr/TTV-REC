@@ -2198,3 +2198,116 @@ button {
   .department-list small { font-size: 11px !important; }
   .detail-body p, .detail-body ul { font-size: 14px !important; }
 }
+
+/* Mobile density pass: keep every story legible while fitting more content above the fold. */
+@media (max-width: 760px) {
+  :root { --pad: clamp(14px, 4vw, 22px); }
+  .site-header { padding-top: max(14px, env(safe-area-inset-top)); padding-bottom: 8px; gap: 6px; }
+  .brand { gap: 7px; min-width: 0; }
+  .brand-logo, .brand-symbol { width: 32px; height: 34px; }
+  .brand-name { display: block; max-width: clamp(92px, 31vw, 132px); font-size: 8px; line-height: 1.25; }
+  .brand-name > span { font-size: 8px; }
+  .header-actions { gap: 5px; }
+  .press-nav { width: 36px; min-height: 36px; }
+  .menu-toggle { min-width: 36px; min-height: 36px; font-size: 19px; }
+  .chapter-content, .story-layer.chapter-1 .chapter-content, .story-layer.chapter-2 .chapter-content,
+  .story-layer.chapter-3 .chapter-content, .story-layer.chapter-4 .chapter-content {
+    left: var(--pad); width: calc(100% - var(--pad) * 2); bottom: 122px;
+  }
+  .chapter-copy > .eyebrow { margin-bottom: 11px; font-size: 8px; }
+  .chapter-copy h1, .chapter-copy h2 { font-size: clamp(34px, 9vw, 46px); line-height: 1.02; letter-spacing: -.05em; }
+  .chapter-description, .story-layer.chapter-1 .chapter-description, .story-layer.chapter-3 .chapter-description,
+  .story-layer.chapter-4 .chapter-description {
+    max-width: 100%; font-size: 12px !important; line-height: 1.48; margin: 11px 0 13px;
+  }
+  .chapter-copy h1 br { display: block; }
+  .button { min-height: 40px; padding-inline: 14px; font-size: 11px !important; }
+  .micro-note { margin-top: 8px; font-size: 8px !important; }
+  .location-card { padding: 9px 10px; gap: 9px; }
+  .activity-preview { padding: 10px 12px; }
+  .activity-preview h3 { font-size: 18px; margin: 3px 0; }
+  .activity-preview > p { font-size: 10px !important; }
+  .activity-controls { margin-top: 2px; }
+  .department-list {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 9px;
+    max-width: none; padding: 3px 8px !important;
+  }
+  .department-list > button {
+    min-width: 0; min-height: 58px; padding: 7px 2px !important; gap: 6px;
+    border-left: 0; border-bottom: 1px solid var(--line);
+  }
+  .department-list > button:nth-last-child(-n + 2) { border-bottom: 0; }
+  .department-list > button > .mono { font-size: 8px; }
+  .department-list > button > div { min-width: 0; }
+  .department-list strong { font-size: 12px; line-height: 1.15; }
+  .department-list small { margin-top: 2px; font-size: 9px !important; line-height: 1.2; }
+  .department-list > button > span:last-child { font-size: 13px; }
+  .department-details { margin-top: 5px; min-height: 38px; font-size: 10px; }
+  .model-console { left: var(--pad); right: var(--pad); top: 31%; padding: 8px 10px; }
+  .model-console strong { font-size: 13px; }
+  .model-console small { font-size: 9px !important; }
+  .model-switch button { width: 34px; min-height: 34px; }
+  .journey-footer { left: var(--pad); right: var(--pad); bottom: max(8px, env(safe-area-inset-bottom)); }
+  .chapter-nav { min-height: 54px; padding: 6px 8px 0; gap: 6px; }
+  .chapter-nav > button { min-height: 44px; padding: 5px 0 9px; }
+  .chapter-nav > button > span { margin-bottom: 4px; font-size: 9px !important; }
+  .chapter-nav > button > strong { font-size: clamp(7px, 2.25vw, 9px) !important; letter-spacing: 0; }
+  .contact-dock {
+    right: var(--pad); bottom: calc(69px + env(safe-area-inset-bottom)); left: auto;
+    z-index: 9; gap: 0; font-size: 0;
+  }
+  .contact-dock nav { flex-direction: row; gap: 5px; }
+  .contact-dock a { width: 34px; height: 34px; }
+  .contact-dock a svg { width: 17px; height: 17px; }
+  .contact-dock > span, .contact-dock a::after { display: none; }
+  .press-dialog { width: calc(100vw - 12px); max-height: calc(100svh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 12px); }
+  .press-dialog-shell { max-height: inherit; }
+  .press-masthead { min-height: clamp(142px, 23svh, 190px); padding: 16px; }
+  .press-masthead .close-button { top: 8px; right: 8px; }
+  .press-archive { padding: 12px 10px 18px; }
+  .press-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 7px; }
+  .press-card img { aspect-ratio: 1 / 1; }
+  .press-card > div { padding: 7px; gap: 4px 6px; }
+  .press-card > div span:first-child { font-size: 8px; }
+  .press-card strong { font-size: 11px; line-height: 1.2; }
+  .press-card > div span:last-child { font-size: 14px; }
+  .detail-dialog { width: calc(100vw - 20px); max-height: calc(100svh - 24px); padding: 0; }
+  .detail-body { padding: 18px 16px; }
+}
+@media (max-width: 380px) {
+  .brand-name { max-width: 94px; }
+  .brand-name strong { display: block; }
+  .chapter-content, .story-layer.chapter-1 .chapter-content, .story-layer.chapter-2 .chapter-content,
+  .story-layer.chapter-3 .chapter-content, .story-layer.chapter-4 .chapter-content { bottom: 116px; }
+  .chapter-copy h1, .chapter-copy h2 { font-size: clamp(32px, 8.8vw, 38px); }
+  .chapter-nav { gap: 4px; }
+  .chapter-nav > button > strong { font-size: 7px !important; }
+  .press-nav { width: 34px; min-height: 34px; }
+  .contact-dock nav { gap: 4px; }
+  .contact-dock a { width: 32px; height: 32px; }
+  .footer-inner { grid-template-columns: 1fr 1fr; gap: 18px 12px; }
+  .footer-brand { grid-column: 1 / -1; }
+}
+@media (max-height: 700px) and (max-width: 760px) {
+  .chapter-content, .story-layer.chapter-1 .chapter-content, .story-layer.chapter-2 .chapter-content,
+  .story-layer.chapter-3 .chapter-content, .story-layer.chapter-4 .chapter-content { bottom: 100px; }
+  .chapter-copy > .eyebrow { margin-bottom: 7px; }
+  .chapter-copy h1, .chapter-copy h2 { font-size: clamp(30px, 7.5vw, 39px); }
+  .chapter-description, .story-layer.chapter-1 .chapter-description, .story-layer.chapter-3 .chapter-description,
+  .story-layer.chapter-4 .chapter-description { margin: 7px 0 9px; font-size: 11px !important; line-height: 1.4; }
+  .department-list > button { min-height: 50px; padding-block: 4px !important; }
+  .department-list small { font-size: 8px !important; }
+  .press-masthead { min-height: 125px; }
+}
+@media (max-height: 520px) and (orientation: landscape) and (max-width: 900px) {
+  .site-header { padding-top: 7px; }
+  .chapter-content, .story-layer.chapter-1 .chapter-content, .story-layer.chapter-2 .chapter-content,
+  .story-layer.chapter-3 .chapter-content, .story-layer.chapter-4 .chapter-content { bottom: 76px; }
+  .chapter-copy h1, .chapter-copy h2 { font-size: 30px; }
+  .chapter-description, .story-layer.chapter-1 .chapter-description, .story-layer.chapter-3 .chapter-description,
+  .story-layer.chapter-4 .chapter-description { margin: 6px 0; font-size: 10px !important; }
+  .contact-dock { bottom: calc(62px + env(safe-area-inset-bottom)); }
+  .contact-dock a { width: 30px; height: 30px; }
+  .chapter-nav { min-height: 46px; }
+  .press-masthead { min-height: 110px; }
+}
