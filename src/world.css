@@ -3780,3 +3780,70 @@ html { scrollbar-color: #1a4b8c #edf4fa; }
   .sticky-item span { font-size: 9px; }
   .contact-dock { display: none; }
 }
+
+/* The ROAD walk is an optional, playable layer of the same five chapters. */
+body.road-game-active { overflow: hidden; }
+.explore-launch {
+  position: absolute;
+  z-index: 12;
+  left: max(4vw, 24px);
+  bottom: 114px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid #153f78;
+  border-radius: 2px;
+  background: #153f78;
+  box-shadow: 0 9px 25px rgba(19, 42, 69, .2);
+  color: #fff;
+  font: 800 11px var(--font-system);
+  letter-spacing: .085em;
+  cursor: pointer;
+}
+.explore-launch:hover,
+.explore-launch:focus-visible { background: #d32f2f; border-color: #d32f2f; outline: 2px solid #fff; outline-offset: 3px; }
+.game-mode .explore-launch { top: 108px; bottom: auto; left: auto; right: max(4vw, 24px); background: #f8fafc; border-color: #b5c8db; color: #153f78; }
+.game-mode .world-canvas { opacity: 1; -webkit-mask-image: none; mask-image: none; }
+.game-mode .story-stage,
+.game-mode .journey-footer,
+.game-mode .contact-dock,
+.game-mode .reading-progress { display: none !important; }
+.game-hud { position: absolute; inset: 0; z-index: 7; pointer-events: none; color: #143967; }
+.game-hud-title,
+.game-route,
+.game-station-card,
+.game-hint { position: absolute; background: rgba(248, 250, 252, .94); border: 1px solid rgba(26, 75, 140, .24); box-shadow: 0 12px 32px rgba(12, 40, 69, .1); }
+.game-hud-title { top: 108px; left: max(4vw, 24px); width: min(345px, 30vw); padding: 17px 20px 18px; }
+.game-hud-title span,
+.game-station-card span,
+.game-route span { display: block; font: 800 10px var(--font-system); letter-spacing: .14em; color: #d32f2f; }
+.game-hud-title strong { display: block; margin-top: 7px; font: 700 clamp(22px, 2.15vw, 31px)/1.02 var(--font-system); }
+.game-hud-title p { margin: 9px 0 0; font: 500 12px/1.45 var(--font-system); }
+.game-route { top: 165px; right: max(4vw, 24px); width: min(290px, 26vw); padding: 12px 14px; }
+.game-route-track { height: 5px; background: #c9d5df; overflow: hidden; }
+.game-route-track i { display: block; height: 100%; background: #d32f2f; transition: width .18s linear; }
+.game-route span { margin-top: 9px; color: #31577f; font-size: 9px; letter-spacing: .07em; }
+.game-hint { bottom: 34px; left: max(4vw, 24px); padding: 10px 14px; font: 700 10px var(--font-system); letter-spacing: .04em; }
+.game-station-card { right: max(4vw, 24px); bottom: 34px; width: min(320px, 30vw); padding: 16px 18px; pointer-events: auto; }
+.game-station-card strong { display: block; margin: 6px 0; font: 700 25px var(--font-system); }
+.game-station-card p { margin: 0 0 14px; font: 500 12px/1.4 var(--font-system); }
+.game-station-card button { width: 100%; min-height: 40px; border: 0; border-radius: 2px; background: #d32f2f; color: #fff; font: 800 11px var(--font-system); letter-spacing: .04em; cursor: pointer; }
+.game-station-card button:hover,
+.game-station-card button:focus-visible { background: #a92126; outline: 2px solid #153f78; outline-offset: 2px; }
+.game-touch-controls { display: none; }
+@media (max-width: 760px) {
+  .explore-launch { left: 24px; bottom: 96px; min-height: 40px; padding: 0 12px; font-size: 9px; }
+  .game-mode .explore-launch { top: 91px; right: 16px; left: auto; bottom: auto; }
+  .game-hud-title { top: 145px; left: 16px; width: min(260px, 68vw); padding: 11px 13px; }
+  .game-hud-title strong { font-size: 17px; }
+  .game-hud-title p { font-size: 10px; margin-top: 4px; }
+  .game-route { top: 244px; right: 16px; width: 155px; padding: 8px; }
+  .game-route span { font-size: 7px; }
+  .game-hint { display: none; }
+  .game-station-card { bottom: 122px; left: 16px; right: 16px; width: auto; padding: 10px 12px; }
+  .game-station-card strong { font-size: 19px; }
+  .game-station-card p { margin-bottom: 8px; font-size: 10px; }
+  .game-station-card button { min-height: 36px; }
+  .game-touch-controls { display: grid; position: absolute; left: 16px; right: 16px; bottom: max(19px, env(safe-area-inset-bottom)); grid-template-columns: repeat(4, 1fr); gap: 9px; pointer-events: auto; }
+  .game-touch-controls button { min-height: 58px; border: 1px solid #9fb8d3; border-radius: 3px; background: rgba(248, 250, 252, .86); color: #153f78; font: 700 26px var(--font-system); touch-action: none; user-select: none; }
+  .game-touch-controls button:active { background: #153f78; color: #fff; }
+}
