@@ -11,15 +11,20 @@ import secretSantaImage from '../assets/images/gen16/secret-santa.jpg';
 import cuuKeEmNgheImage from '../assets/images/gen16/cuu-ke-em-nghe.jpg';
 import recOutingImage from '../assets/images/gen16/rec-outing.jpg';
 
+import gen16Cover from '../assets/images/gen16-bnd/bnd-ttv-cover.png';
+import gen16FormBanner from '../assets/images/gen16-bnd/form-banner.png';
+
 export const chapters = [
-  { id: 'orbit', name: 'Khởi hành', tag: '01 / REC FTU — TUYỂN THÀNH VIÊN GEN 16' },
+  { id: 'orbit', name: 'Khởi hành', tag: '01 / REC FTU — ROAD · VỀ NHÀ' },
   { id: 'vietnam', name: 'Ngoại Thương', tag: '02 / ĐIỂM HẸN: HÀ NỘI, NGOẠI THƯƠNG' },
   { id: 'activities', name: 'Dấu ấn', tag: '03 / NHỮNG ĐIỀU CHÚNG MÌNH ĐÃ LÀM' },
   { id: 'departments', name: 'Đồng đội', tag: '04 / CHỌN VAI TRÒ CỦA EM' },
-  { id: 'join', name: 'Gia nhập', tag: '05 / HẸN GẶP EM Ở NHÀ REC' },
+  { id: 'join', name: 'Gia nhập', tag: '05 / VÌ REC LÀ NHÀ' },
 ];
 export const campaignImages = [
-  { image: gen16Recruitment, name: 'Tuyển thành viên Gen 16', tag: 'CHIẾN DỊCH GEN 16' },
+  { image: gen16Cover, name: 'ROAD · Tuyển thành viên Gen 16', tag: 'BỘ NHẬN DIỆN GEN 16' },
+  { image: gen16FormBanner, name: 'Đơn đăng ký Gen 16', tag: 'VÒNG ĐƠN · GOOGLE FORM' },
+  { image: gen16Recruitment, name: 'Poster Tuyển thành viên Gen 16', tag: 'CHIẾN DỊCH GEN 16' },
   { image: gen16OpenApplications, name: 'Mở đơn Gen 16', tag: 'VÒNG 1 · MỞ ĐƠN' },
 ];
 const activityImages = {
@@ -47,18 +52,19 @@ export const departments = Object.entries(departmentData).map(([id, data], i) =>
 export const recruitmentIntro = [
   'Có một con đường mà chẳng ai bắt đầu từ cùng một điểm. Mỗi người bước vào đại học với một câu chuyện riêng, mang theo những điều mình yêu thích, những ước mơ còn dang dở và cả những người chưa từng gặp. Trên hành trình ấy, đôi khi chỉ một cuộc gặp tình cờ cũng đủ để một con đường xa lạ trở nên thân quen. Và biết đâu, nơi bạn tìm thấy những người đồng hành cũng chính là nơi bạn muốn gọi là nhà.',
   'Chúng mình tin rằng những mối liên kết đẹp nhất thường bắt đầu từ những cuộc gặp rất đỗi bình thường. Từ những người xa lạ, chúng ta dần trở thành những người đồng hành.',
-  'Với REC, hành trình ấy không chỉ là cùng nhau đi qua những ngày tháng đại học, mà còn là cùng tạo nên những kỷ niệm, những câu chuyện và những mối gắn kết đáng nhớ. Bởi đôi khi, điều khiến một nơi trở thành nhà không phải là nơi ấy ở đâu, mà là những người đang ở đó cùng bạn.',
+  'Với REC, hành trình ấy không chỉ là cùng nhau đi qua những ngày tháng đại học, mà còn là cùng tạo nên những kỷ niệm, những câu chuyện và những mối gắn kết đáng nhớ. Bởi đôi khi, điều khiến một nơi trở thành nhà không phải là nơi ấy ở đâu, mà là những người đang ở đó cùng bạn — Vì REC là Nhà.',
 ];
 export const recruitmentRounds = [
-  ['Vòng 1 · Mở đơn', '01/10–20/10'],
-  ['Vòng 2', '23–24/10'],
-  ['Vòng 3', '26/10–01/11'],
-  ['Vòng 4', '02/11–10/11'],
+  ['Vòng Đơn', '01/10 – 20/10'],
+  ['Vòng Đánh giá năng lực', '23/10 – 24/10'],
+  ['Vòng Teamwork', '26/10 – 01/11'],
+  ['Vòng Trải nghiệm & Phỏng vấn', '02/11 – 10/11'],
 ];
 export const timeline = [
-  ['Vòng 1 · Mở đơn', '01/10–20/10 · Kể tụi mình nghe về em, điều em thích và điều em muốn thử sức ở REC nhé.'],
-  ['Vòng 2', '23–24/10 · Chi tiết hình thức vòng này sẽ được REC cập nhật.'],
-  ['Vòng 3', '26/10–01/11 · Chi tiết hình thức vòng này sẽ được REC cập nhật.'],
-  ['Vòng 4', '02/11–10/11 · Chi tiết hình thức vòng này sẽ được REC cập nhật.'],
+  ['Vòng Đơn', '01/10 – 20/10 · Kể tụi mình nghe về em, điều em thích và điều em muốn thử sức ở REC qua đơn ứng tuyển online nhé.'],
+  ['Vòng Đánh giá năng lực', '23/10 – 24/10 · Thử sức và bộc lộ góc nhìn, tư duy cùng tiềm năng riêng biệt của em.'],
+  ['Vòng Teamwork', '26/10 – 01/11 · Cùng làm việc, gắn kết và tạo nên dấu ấn đầu tiên với những người bạn đồng hành.'],
+  ['Vòng Trải nghiệm & Phỏng vấn', '02/11 – 10/11 · Lắng nghe, chia sẻ chân thành cùng các anh chị và chính thức bước chân về Nhà REC.'],
 ];
-export const recruitmentUrl = 'https://www.facebook.com/FTU.REC';
+export const recruitmentUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSe58cV_K2RHsC8aCmwNiOsB3MDQursF6Hi7xkPIm-DUGrdFUA/viewform';
+export const facebookUrl = 'https://www.facebook.com/FTU.REC';

@@ -1,13 +1,30 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import RecWorld from './rec-world.jsx';
 import { chapters, activities, departments, timeline, recruitmentUrl, recruitmentIntro, recruitmentRounds, campaignImages } from './content';
 import recLogoUrl from '../recftu_logo.jpg';
+import bndSkyOfficial from '../assets/images/bnd-sky-official.jpg';
+import gen16Cover from '../assets/images/gen16-bnd/bnd-ttv-cover.png';
+import gen16FormBanner from '../assets/images/gen16-bnd/form-banner.png';
+import bndSkyBg from '../assets/images/gen16-bnd/sky-bg.png';
+import bndFtuBuilding from '../assets/images/gen16-bnd/ftu-building.png';
+import bndSignKey from '../assets/images/gen16-bnd/sign-key.png';
+import noteVongDon from '../assets/images/gen16-bnd/note-vong-don.png';
+import noteVongDgnl from '../assets/images/gen16-bnd/note-vong-dgnl.png';
+import noteVongTeamwork from '../assets/images/gen16-bnd/note-vong-teamwork.png';
+import noteVongTnpv from '../assets/images/gen16-bnd/note-vong-tnpv.png';
+import ftuCampusImage from '../assets/images/ftu-campus.webp';
+import deptBcmImg from '../assets/images/departments/BCM.jpg';
+import deptBttImg from '../assets/images/departments/BTT.jpg';
+import deptBdnImg from '../assets/images/departments/BDN.jpg';
+import deptBtcImg from '../assets/images/departments/BTC.jpg';
+
+const departmentImages = [deptBcmImg, deptBttImg, deptBdnImg, deptBtcImg];
 import oldRecMark from '../assets/images/wix_asset_1.png';
 import oldCampaignCover from '../assets/images/wix_asset_2.png';
 import oldRecVertical from '../assets/images/wix_asset_3.png';
 import oldGen15Banner from '../assets/images/wix_asset_4.png';
 import oldRecNumbers from '../assets/images/wix_asset_5.png';
 
+const RoadWorld = React.lazy(() => import('./road-world.jsx'));
 const Arrow = () => <span aria-hidden="true">↗</span>;
 
 const chapterIconPaths = [
@@ -113,8 +130,8 @@ function Detail({ selection, onClose }) {
         <h2 id="detail-title">{isStory ? 'Con đường về Nhà REC.' : isTimeline ? 'Từ lá đơn đến đồng đội.' : isDept ? item.title : item.name}</h2>
         {isStory ? <div className="story-dialog-copy">{recruitmentIntro.map(paragraph => <p key={paragraph}>{paragraph}</p>)}</div> : selection.type === 'campaign' ? <><img className="detail-image" src={item.image} alt={item.name} /><p className="detail-tag">{item.tag}</p></> : isTimeline ? <>
           <ol className="recruitment-timeline">{timeline.map(([title, description], i) => <li key={title}><span>0{i + 1}</span><div><h3>{title}</h3><p>{description}</p></div></li>)}</ol>
-          <p className="detail-note">Tụi mình sẽ cập nhật lịch tuyển và cách nộp đơn trên fanpage REC FTU nhé.</p>
-          <a className="button primary" href={recruitmentUrl} target="_blank" rel="noreferrer">Xem thông tin ứng tuyển <Arrow /></a>
+          <p className="detail-note">Đơn đăng ký mở từ 01/10 đến hết ngày 20/10/2026. Hãy kể cho REC nghe về em nhé!</p>
+          <a className="button primary" href={recruitmentUrl} target="_blank" rel="noreferrer">Điền đơn ứng tuyển ngay <Arrow /></a>
         </> : isDept ? <>
           <p className="detail-tag">{item.tag}</p>
           {[['Em sẽ làm gì?', item.tasks], ['Điều REC tìm kiếm', item.requirements], ['Điều em mang về', item.benefits]].map(([title, lines]) => <section key={title}><h3>{title}</h3><ul>{lines.map(line => <li key={line}>{line}</li>)}</ul></section>)}
@@ -153,16 +170,25 @@ function PressDialog({ onClose }) {
 }
 
 export default function App() {
-  const [chapter, setChapter] = useState(0);
+  const tabParamVal = (() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const t = parseInt(params.get('tab'), 10);
+      if (!isNaN(t) && t >= 0 && t <= 4) return t;
+    } catch (e) {}
+    return null;
+  })();
+
+  const [chapter, setChapter] = useState(tabParamVal ?? 0);
   const [selection, setSelection] = useState(null);
-  const [ready, setReady] = useState(false);
+  const [ready, setReady] = useState(true);
   const [failure, setFailure] = useState(false);
   const [activityIndex, setActivityIndex] = useState(0);
   const [departmentIndex, setDepartmentIndex] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [pressOpen, setPressOpen] = useState(false);
-  const progress = useRef(0);
-  const targetProgress = useRef(0);
+  const progress = useRef(tabParamVal ?? 0);
+  const targetProgress = useRef(tabParamVal ?? 0);
   const scrollRange = useRef(1);
   const progressLine = useRef(null);
   const scrollTrackRef = useRef(null);
@@ -172,7 +198,10 @@ export default function App() {
   const goTo = useCallback((index) => {
     const clamped = Math.max(0, Math.min(4, index));
     targetProgress.current = clamped;
+    progress.current = clamped;
+    setChapter(clamped);
     window.scrollTo({ top: scrollRange.current * clamped / 4, behavior: 'instant' });
+    if (progressLine.current) progressLine.current.style.transform = `scaleX(${clamped / 4})`;
     sceneState.current.focusRequest = (sceneState.current.focusRequest || 0) + 1;
     setMenuOpen(false);
   }, []);
@@ -188,11 +217,12 @@ export default function App() {
     // The DOM and WebGL camera consume the same eased clock. No second scroll tween.
     let measuredHeight = window.innerHeight;
     let measured = false, resizing = false, resizeFrame;
-    const update = () => { if (resizing || window.innerHeight !== measuredHeight) return; targetProgress.current = Math.max(0, Math.min(4, window.scrollY / scrollRange.current * 4)); };
+    const update = () => { if (resizing || window.innerHeight !== measuredHeight || tabParamVal !== null) return; targetProgress.current = Math.max(0, Math.min(4, window.scrollY / scrollRange.current * 4)); };
     const resize = () => {
       if (!measured) {
         scrollRange.current = Math.max(1, (scrollTrackRef.current?.offsetHeight || window.innerHeight) - window.innerHeight);
-        measured = true; update(); return;
+        measured = true;
+        return;
       }
       const preserved = targetProgress.current; resizing = true;
       cancelAnimationFrame(resizeFrame);
@@ -232,20 +262,34 @@ export default function App() {
   }, [goTo]);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tabParam = params.get('tab');
+    if (tabParam !== null) {
+      const idx = parseInt(tabParam, 10);
+      if (!isNaN(idx) && idx >= 0 && idx <= 4) {
+        setChapter(idx);
+        targetProgress.current = idx;
+        progress.current = idx;
+        return;
+      }
+    }
     const hash = location.hash.slice(1);
     const aliases = { about: 1, hero: 0, apply: 4, timeline: 4, announcement: 4 };
     const initial = chapters.findIndex(item => item.id === hash);
     const index = initial >= 0 ? initial : aliases[hash];
-    if (index != null) requestAnimationFrame(() => window.scrollTo(0, Math.max(1, (scrollTrackRef.current?.offsetHeight || innerHeight) - innerHeight) * index / 4));
-  }, []);
+    if (index != null) goTo(index);
+  }, [goTo]);
   useEffect(() => { history.replaceState(null, '', `#${chapters[chapter].id}`); }, [chapter]);
   const activeActivity = activities[activityIndex];
   return <>
     <div ref={scrollTrackRef} className="scroll-track" aria-hidden="true" />
     <div className={`experience chapter-${chapter} ${ready ? 'is-ready' : ''}`}>
       <a href="#chapter-content" className="skip-link">Đến nội dung</a>
-      {!failure && <RecWorld progress={progress} state={sceneState} onReady={onReady} onFailure={onFailure} onPick={onPick} />}
-      {failure && <div className="fallback-planet" aria-hidden="true" />}
+      <div className="bnd-stage-backdrop" aria-hidden="true">
+        <div className="bnd-sky-official-layer" />
+        <div className="bnd-sky-overlay-gradient" />
+      </div>
+      {!failure && <React.Suspense fallback={null}><RoadWorld progress={progress} onReady={onReady} onFailure={onFailure} /></React.Suspense>}
       <div className="scene-shade" aria-hidden="true" />
       <div className="scene-colorwash" aria-hidden="true" />
       <div className="reading-progress" aria-hidden="true"><div ref={progressLine} /></div>
@@ -254,10 +298,10 @@ export default function App() {
           <img className="brand-logo" src={recLogoUrl} alt="Logo Trường Đại học Ngoại Thương" />
           <span className="brand-name"><strong>CLB Nghiên cứu Thị trường Bất động sản</strong><span>Trường Đại học Ngoại Thương</span></span>
         </button>
-        <div className="header-coordinate"><span className="status-dot" /> HÀ NỘI, VIỆT NAM <span className="coordinate-value">21°01′ N / 105°51′ E</span></div>
+        <div className="header-coordinate"><span className="status-dot" /> HÀ NỘI · FTU <span className="coordinate-value">REC GEN 16 · ROAD</span></div>
         <div className="header-actions">
           <button className="press-nav" aria-label="Mở thư viện ấn phẩm REC" onClick={() => setPressOpen(true)}>ẤN PHẨM <Arrow /></button>
-          <button className="join-nav" onClick={() => goTo(4)}>GIA NHẬP REC <Arrow /></button>
+          <a className="join-nav bnd-sign-button" href={recruitmentUrl} target="_blank" rel="noreferrer">ĐIỀN ĐƠN NGAY <Arrow /></a>
           <button className="menu-toggle" aria-label="Mở điều hướng" aria-expanded={menuOpen} aria-controls="mobile-menu" onClick={() => setMenuOpen(value => !value)}>{menuOpen ? '✕' : '☰'}</button>
         </div>
       </header>
@@ -265,57 +309,127 @@ export default function App() {
       <main id="chapter-content" className="story-stage" tabIndex={-1}>
         {chapters.map((story, panelIndex) => <section key={story.id} className={`story-layer chapter-${panelIndex} ${chapter === panelIndex ? 'active' : ''}`} inert={chapter !== panelIndex} aria-hidden={chapter !== panelIndex}>
         <div className="chapter-content"><div className="chapter-copy">
-          <p className="eyebrow"><span /> {story.tag}</p>
           {panelIndex === 0 && <>
-            <h1>Thế giới rộng.<br />Mình <em>đi cùng.</em></h1>
-            <p className="chapter-description">Có cả thế giới đang chờ em khám phá.<br />Ở Nhà REC, tụi mình bắt đầu từ những điều gần gũi nhất.</p>
-            <button className="button primary" onClick={() => goTo(1)}>Đi cùng REC <Arrow /></button>
-            <p className="micro-note"><span className="mini-orbit" /> Kéo địa cầu để xoay · Chạm Hà Nội để đến gần</p>
+            <div className="hero-bnd-layout">
+              <div className="hero-text-col">
+                <div className="bnd-hero-badge">
+                  <span className="bnd-badge-clb">CLB NGHIÊN CỨU THỊ TRƯỜNG BẤT ĐỘNG SẢN · ĐH NGOẠI THƯƠNG</span>
+                  <span className="bnd-badge-gen">TUYỂN THÀNH VIÊN THẾ HỆ THỨ 16</span>
+                </div>
+                <h1 className="bnd-hero-title">
+                  <span className="bnd-title-road">ROAD</span>
+                  <span className="bnd-title-sub">ĐƯỜNG VỀ NHÀ · VÌ REC LÀ NHÀ</span>
+                </h1>
+                <p className="chapter-description">Mỗi hành trình đại học bắt đầu từ những bước chân riêng rẽ. Ở REC, tụi mình cùng nhau đi chung một con đường.</p>
+                <div className="hero-cta-group">
+                  <a className="button primary cta-pulse" href={recruitmentUrl} target="_blank" rel="noreferrer">Điền đơn ứng tuyển ngay <Arrow /></a>
+                  <button className="button secondary" onClick={() => goTo(1)}>Khám phá hành trình <Arrow /></button>
+                </div>
+                <div className="bnd-sticky-preview">
+                  <div className="sticky-item"><img src={noteVongDon} alt="Vòng Đơn: 01/10 - 20/10" /><span><strong>VÒNG ĐƠN</strong>01/10 - 20/10</span></div>
+                  <div className="sticky-item"><img src={noteVongDgnl} alt="Vòng ĐGNL: 23/10 - 24/10" /><span><strong>ĐÁNH GIÁ NL</strong>23/10 - 24/10</span></div>
+                  <div className="sticky-item"><img src={noteVongTeamwork} alt="Vòng Teamwork: 26/10 - 01/11" /><span><strong>TEAMWORK</strong>26/10 - 01/11</span></div>
+                  <div className="sticky-item"><img src={noteVongTnpv} alt="Vòng Trải nghiệm & PV: 02/11 - 10/11" /><span><strong>TRẢI NGHIỆM</strong>02/11 - 10/11</span></div>
+                </div>
+              </div>
+              <div className="hero-visual-col">
+                <div className="hero-poster-frame">
+                  <img src={gen16Cover} alt="Bộ nhận diện Gen 16 REC - ROAD Về Nhà" className="hero-poster-img" />
+                </div>
+              </div>
+            </div>
           </>}
           {panelIndex === 1 && <>
-            <h2>Hà Nội.<br />Ngoại Thương.<br /><em>REC Là Nhà.</em></h2>
-            <p className="chapter-description">Mỗi người đến Ngoại Thương từ một điểm xuất phát khác nhau. Ở REC, những cuộc gặp bình thường dần thành tình bạn và một nơi để gọi là nhà.</p>
-            <div className="location-card"><span className="location-symbol">↗</span><div><strong>CLB Nghiên cứu Thị trường Bất động sản</strong><p>Trường Đại học Ngoại Thương</p><small>91 Chùa Láng · Hà Nội</small></div></div>
-            <div className="story-links"><button className="text-link" onClick={() => setSelection({ type: 'story' })}>Đọc câu chuyện REC <Arrow /></button><button className="text-link" onClick={() => goTo(2)}>Khám phá Nhà REC <Arrow /></button></div>
+            <div className="ftu-showcase-layout">
+              <div className="ftu-text-side">
+                <p className="eyebrow"><span /> {story.tag}</p>
+                <h2>Hà Nội.<br />Ngoại Thương.<br /><em>REC Là Nhà.</em></h2>
+                <p className="chapter-description">Mỗi người đến Ngoại Thương từ một điểm xuất phát khác nhau. Ở REC, những cuộc gặp bình thường dần thành tình bạn và một nơi để gọi là nhà.</p>
+                <div className="location-card"><span className="location-symbol">↗</span><div><strong>CLB Nghiên cứu Thị trường Bất động sản</strong><p>Trường Đại học Ngoại Thương</p><small>91 Chùa Láng · Đống Đa · Hà Nội</small></div></div>
+                <div className="story-links"><button className="text-link" onClick={() => setSelection({ type: 'story' })}>Đọc câu chuyện REC <Arrow /></button><button className="button secondary" onClick={() => goTo(2)}>Khám phá Nhà REC <Arrow /></button></div>
+              </div>
+              <div className="ftu-image-side">
+                <div className="ftu-photo-frame">
+                  <img src={ftuCampusImage} alt="Trường Đại học Ngoại Thương Hà Nội" className="ftu-photo" />
+                  <div className="ftu-photo-badge">TRƯỜNG ĐẠI HỌC NGOẠI THƯƠNG · 91 CHÙA LÁNG</div>
+                </div>
+              </div>
+            </div>
           </>}
           {panelIndex === 2 && <>
-            <h2>Chuyện tụi mình<br /><em>đã cùng làm.</em></h2>
-            <p className="chapter-description">Từ những buổi học, sự kiện đến chuyến đi xa — mỗi dịp lại có thêm chuyện vui để nhớ.</p>
-            <div className="activity-preview" key={activityIndex}>
-              <button className="activity-preview-image" onClick={() => setSelection({ type: 'activity', index: activityIndex })} aria-label={`Xem ảnh và câu chuyện: ${activeActivity.name}`}><img src={activeActivity.image} alt={activeActivity.name} /></button>
-              <span className="mono">{String(activityIndex + 1).padStart(2, '0')} / {String(activities.length).padStart(2, '0')}</span>
-              <h3>{activeActivity.name}</h3><p>{activeActivity.tag}</p>
-              <button className="text-link" onClick={() => setSelection({ type: 'activity', index: activityIndex })}>Kể em nghe <Arrow /></button>
+            <div className="activity-centered-container">
+              <p className="eyebrow"><span /> {story.tag}</p>
+              <h2>Chuyện tụi mình <em>đã cùng làm.</em></h2>
+              <p className="chapter-description">Từ những buổi học, sự kiện đến chuyến đi xa — mỗi dịp lại có thêm chuyện vui để nhớ.</p>
+              <div className="activity-big-card">
+                <button className="activity-preview-image" onClick={() => setSelection({ type: 'activity', index: activityIndex })} aria-label={`Xem ảnh và câu chuyện: ${activeActivity.name}`}><img key={activeActivity.id} src={activeActivity.image} alt={activeActivity.name} /></button>
+                <div className="activity-preview-meta">
+                  <span className="mono">{String(activityIndex + 1).padStart(2, '0')} / {String(activities.length).padStart(2, '0')}</span>
+                  <h3>{activeActivity.name}</h3><p className="activity-tagline">{activeActivity.tag}</p>
+                  <p className="activity-desc-snippet">{activeActivity.desc}</p>
+                  <button className="button secondary" onClick={() => setSelection({ type: 'activity', index: activityIndex })}>Kể em nghe chuyện này <Arrow /></button>
+                </div>
+              </div>
+              <div className="activity-controls"><button aria-label="Hoạt động trước" onClick={() => setActivityIndex(index => (index + activities.length - 1) % activities.length)}>←</button><div>{activities.map((item, i) => <button key={item.id} className={i === activityIndex ? 'active' : ''} aria-label={item.name} aria-pressed={i === activityIndex} onClick={() => setActivityIndex(i)} />)}</div><button aria-label="Hoạt động tiếp" onClick={() => setActivityIndex(index => (index + 1) % activities.length)}>→</button></div>
             </div>
-            <div className="activity-controls"><button aria-label="Hoạt động trước" onClick={() => setActivityIndex(index => (index + activities.length - 1) % activities.length)}>←</button><div>{activities.map((item, i) => <button key={item.id} className={i === activityIndex ? 'active' : ''} aria-label={item.name} aria-pressed={i === activityIndex} onClick={() => setActivityIndex(i)} />)}</div><button aria-label="Hoạt động tiếp" onClick={() => setActivityIndex(index => (index + 1) % activities.length)}>→</button></div>
           </>}
           {panelIndex === 3 && <>
-            <h2>Bốn ban.<br /><em>Có em trong đội.</em></h2>
-            <p className="chapter-description">Em thích tìm hiểu, sáng tạo, kết nối hay tổ chức? Tụi mình có một chỗ dành cho em.</p>
-            <div className="department-list">{departments.map((department, i) => <button key={department.id} className={departmentIndex === i ? 'selected' : ''} aria-pressed={departmentIndex === i} onClick={() => setDepartmentIndex(i)}><span className="mono">{department.number}</span><div><strong>{department.short}</strong><small>{department.line}</small></div><span aria-hidden="true">{departmentIndex === i ? '●' : '↗'}</span></button>)}</div>
-            <button className="text-link department-details" onClick={() => setSelection({ type: 'department', index: departmentIndex })}>Tìm hiểu về ban {departments[departmentIndex].short} <Arrow /></button>
+            <div className="department-split-layout">
+              <div className="department-left-side">
+                <p className="eyebrow"><span /> {story.tag}</p>
+                <h2>Bốn ban.<br /><em>Có em trong đội.</em></h2>
+                <p className="chapter-description">Em thích tìm hiểu, sáng tạo, kết nối hay tổ chức? Tụi mình có một chỗ dành cho em.</p>
+                <div className="department-list">{departments.map((department, i) => <button key={department.id} className={departmentIndex === i ? 'selected' : ''} aria-pressed={departmentIndex === i} onClick={() => setDepartmentIndex(i)}><span className="mono">{department.number}</span><div><strong>{department.short}</strong><small>{department.line}</small></div><span aria-hidden="true">{departmentIndex === i ? '●' : '↗'}</span></button>)}</div>
+                <button className="text-link department-details" onClick={() => setSelection({ type: 'department', index: departmentIndex })}>Tìm hiểu về ban {departments[departmentIndex].short} <Arrow /></button>
+              </div>
+              <div className="department-right-side">
+                <div className="department-photo-card" onClick={() => setSelection({ type: 'department', index: departmentIndex })}>
+                  <img key={departments[departmentIndex].id} src={departmentImages[departmentIndex]} alt={`Ban ${departments[departmentIndex].short}`} className="department-photo" />
+                  <div className="department-photo-caption">
+                    <span className="caption-label">BAN {departments[departmentIndex].short.toUpperCase()}</span>
+                    <strong className="caption-tagline">{departments[departmentIndex].tag}</strong>
+                    <span className="caption-hint">Bấm ảnh để xem chi tiết công việc <Arrow /></span>
+                  </div>
+                </div>
+                <div className="department-thumb-switch">
+                  {departments.map((d, i) => (
+                    <button key={d.id} className={`thumb-btn ${departmentIndex === i ? 'active' : ''}`} onClick={() => setDepartmentIndex(i)}>
+                      <img src={departmentImages[i]} alt={d.short} />
+                      <span>{d.short}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </>}
           {panelIndex === 4 && <>
-            <p className="join-kicker">GEN 16 · NHÀ REC ĐANG TÌM ĐỒNG ĐỘI</p>
-            <h2>Nhà REC thêm vui.<br /><em>Khi có em.</em></h2>
-            <p className="chapter-description">{recruitmentIntro[2]}</p>
-            <div className="join-actions"><a className="button primary" href={recruitmentUrl} target="_blank" rel="noreferrer">Xem cách ứng tuyển <Arrow /></a><button className="button secondary" onClick={() => setSelection({ type: 'timeline' })}>Các vòng sẽ như thế nào? <span>＋</span></button></div>
-            <RegistrationCountdown />
-            <div className="join-actions">
-              {campaignImages.map((item, index) => <button className="button secondary" key={item.name} onClick={() => setSelection({ type: 'campaign', index })}>{item.name} <Arrow /></button>)}
+            <div className="join-balanced-grid">
+              <div className="join-grid-banner">
+                <div className="join-hero-banner-wrapper">
+                  <img src={gen16FormBanner} alt="Tuyển thành viên Gen 16" className="join-form-cover" />
+                </div>
+              </div>
+              <div className="join-grid-main">
+                <p className="join-kicker">GEN 16 · ROAD · VỀ NHÀ</p>
+                <h2>Nhà REC thêm vui.<br /><em>Khi có em.</em></h2>
+                <p className="chapter-description">{recruitmentIntro[2]}</p>
+                <div className="join-actions">
+                  <a className="button primary cta-pulse" href={recruitmentUrl} target="_blank" rel="noreferrer">Điền đơn ứng tuyển ngay <Arrow /></a>
+                  <button className="button secondary" onClick={() => setSelection({ type: 'timeline' })}>Lịch trình 4 vòng tuyển <span>＋</span></button>
+                </div>
+              </div>
+              <div className="join-grid-extra">
+                <RegistrationCountdown />
+                <div className="join-actions">
+                  {campaignImages.map((item, index) => <button className="button secondary" key={item.name} onClick={() => setSelection({ type: 'campaign', index })}>{item.name} <Arrow /></button>)}
+                </div>
+                <p className="micro-note">Lịch tuyển Gen 16: {recruitmentRounds.map(([round, dates]) => `${round} (${dates})`).join(' · ')}. Hạn nộp đơn: 23:59 ngày 20/10/2026.</p>
+              </div>
             </div>
-            <p className="micro-note">Lịch tuyển Gen 16: {recruitmentRounds.map(([round, dates]) => `${round} ${dates}`).join(' · ')}. Giờ và nội dung chi tiết từng vòng sẽ được cập nhật trên fanpage REC FTU.</p>
           </>}
         </div></div>
         </section>)}
       </main>
-
-      {chapter === 3 && <div className="model-console"><div><span className="model-index">0{departmentIndex + 1} / 04</span><strong>{departments[departmentIndex].short}</strong><small>Kéo để xoay · Bấm mô hình để xem chi tiết</small></div><div className="model-switch"><button aria-label="Mô hình trước" onClick={() => setDepartmentIndex(index => (index + 3) % 4)}>←</button><button aria-label="Mô hình tiếp" onClick={() => setDepartmentIndex(index => (index + 1) % 4)}>→</button></div></div>}
-
-      <aside className="scene-caption" aria-hidden="true">
-        <div className="scene-data"><svg className="radar-glyph" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="24" /><circle cx="28" cy="28" r="15" /><path d="M28 1v54M1 28h54" /><g className="radar-hand"><path d="M28 28L45 11" /></g><circle className="radar-point" cx="37" cy="17" r="2" /><circle className="radar-center" cx="28" cy="28" r="2" /></svg><div><small>{['ĐIỂM HẸN', 'NGOẠI THƯƠNG · HÀ NỘI', 'REC ARCHIVE', 'CÙNG MỘT QUỸ ĐẠO', 'HẸN GẶP EM'][chapter]}</small><strong>{['Hà Nội, Việt Nam', 'Hà Nội, Ngoại Thương', `${String(activities.length).padStart(2, '0')} câu chuyện`, '04 mảnh ghép', 'Nhà REC'][chapter]}</strong><span>{['21.0285° N · 105.8542° E', 'REC Là Nhà', 'Học · Làm · Gắn kết', 'Chọn ban để khám phá', 'Thế hệ tiếp theo'][chapter]}</span></div></div>
-        <div className="caption-rule" /><p>{['Góc nhìn lớn. Khởi đầu nhỏ.', 'Từ Ngoại Thương, cùng nhau dựng nên một mái nhà.', 'Những khoảnh khắc trở thành chúng ta.', 'Khác biệt để cùng nhau tiến xa.', 'Hẹn gặp em ở Nhà REC.'][chapter]}</p>
-      </aside>
 
       <footer className="journey-footer">
         <div className="journey-intro"><span className="scroll-mouse" aria-hidden="true" /><span>CUỘN ĐỂ<br /><strong>ĐỔI GÓC NHÌN</strong></span></div>
@@ -339,8 +453,6 @@ export default function App() {
         </nav>
       </aside>
       <nav id="mobile-menu" className={`mobile-menu ${menuOpen ? 'open' : ''}`} inert={!menuOpen} aria-label="Điều hướng di động">{chapters.map((item, i) => <button key={item.id} onClick={() => goTo(i)}><span>0{i + 1}</span>{item.name}<Arrow /></button>)}</nav>
-      {!ready && <div className="loading-scene" role="status"><span className="loading-ring" /><p>Đang mở một góc nhìn mới…</p></div>}
-      {failure && <p className="scene-fallback-note" role="status">Chế độ nhẹ — em vẫn có thể khám phá đầy đủ các chặng.</p>}
     </div>
     <footer className="site-footer">
       <div className="footer-inner">
