@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { ROAD_STATIONS } from './road-game-data';
+import { ROAD_LANDMARKS } from './road-landmarks';
 
 const palette = [0xc5ac98, 0x9db4c2, 0xd6b7a8, 0xaab8a7, 0xbcb3a6];
 const navy = new THREE.MeshStandardMaterial({ color: 0x163b70, metalness: 0.15, roughness: 0.55 });
@@ -131,7 +131,7 @@ export function addRoadNeighborhood(scene, roadPath, roadHalfWidth, roadsideAt, 
   root.name = 'REC roadside neighborhoods';
   scene.add(root);
   const forward = new THREE.Vector3(0, 0, -1);
-  ROAD_STATIONS.forEach((station, chapter) => {
+  ROAD_LANDMARKS.forEach((station, chapter) => {
     for (const side of [-1, 1]) {
       for (let building = 0; building < 2; building++) {
         if (mobile && building === 1) continue;

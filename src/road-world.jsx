@@ -7,9 +7,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { SSAOPass } from 'three/addons/postprocessing/SSAOPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { ROAD_STATIONS } from './road-game-data';
 import { addRoadNeighborhood } from './road-neighborhood';
-import { makeRoadAvatar } from './road-avatar';
 
 const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
 const MODEL_ROOT = '/models/road-world/polyhaven';
@@ -113,12 +111,8 @@ function cursorGlowTexture() {
   return texture;
 }
 
-export default function RoadWorld({ progress, gameMode, gameInput, gameSpawn, onStationChange, onGameVisit, onGamePosition, onReady, onFailure }) {
+export default function RoadWorld({ progress, onReady, onFailure }) {
   const canvasRef = useRef(null);
-  const gameModeRef = useRef(gameMode);
-  const callbacksRef = useRef({ onStationChange, onGameVisit, onGamePosition });
-  gameModeRef.current = gameMode;
-  callbacksRef.current = { onStationChange, onGameVisit, onGamePosition };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -132,7 +126,9 @@ export default function RoadWorld({ progress, gameMode, gameInput, gameSpawn, on
 
     let disposed = false;
     const isMobile = () => window.innerWidth < 760;
-    const pixelRatio = () => Math.min(devicePixelRatio, isMobile() ? 1.25 : 1.55, Math.sqrt(1700000 / (innerWidth * innerHeight)));
+    const lowPower = () => isMobile() || (navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 4) || (navigator.deviceMemory > 0 && navigator.deviceMemory <= 4);
+    let adaptiveScale = 1;
+    const pixelRatio = () => Math.min(devicePixelRatio, lowPower() ? 1.05 : 1.5, Math.sqrt((lowPower() ? 720000 : 1500000) / (innerWidth * innerHeight))) * adaptiveScale;
     renderer.setPixelRatio(pixelRatio());
     renderer.setSize(innerWidth, innerHeight, false);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -149,23 +145,24 @@ export default function RoadWorld({ progress, gameMode, gameInput, gameSpawn, on
     scene.environmentIntensity = 0.76;
     scene.fog = new THREE.Fog(0xc3d7e4, 38, 88);
     const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 160);
-    const composer = new EffectComposer(renderer);
-    const renderPass = new RenderPass(scene, camera);
-    renderPass.clearAlpha = 0;
-    composer.addPass(renderPass);
-    const ssaoPass = new SSAOPass(scene, camera, innerWidth, innerHeight, 16);
-    ssaoPass.kernelRadius = 7;
-    ssaoPass.minDistance = 0.004;
-    ssaoPass.maxDistance = 0.12;
-    composer.addPass(ssaoPass);
-    const bloomPass = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.26, 0.42, 0.9);
-    composer.addPass(bloomPass);
-    composer.addPass(new OutputPass());
+    const composer = lowPower() ? null : new EffectComposer(renderer);
+    if (composer) {
+      const renderPass = new RenderPass(scene, camera);
+      renderPass.clearAlpha = 0;
+      composer.addPass(renderPass);
+      const ssaoPass = new SSAOPass(scene, camera, innerWidth, innerHeight, 16);
+      ssaoPass.kernelRadius = 7;
+      ssaoPass.minDistance = 0.004;
+      ssaoPass.maxDistance = 0.12;
+      composer.addPass(ssaoPass);
+      composer.addPass(new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.26, 0.42, 0.9));
+      composer.addPass(new OutputPass());
+    }
     scene.add(new THREE.HemisphereLight(0xeaf4ff, 0x53616b, 1.05));
     const sun = new THREE.DirectionalLight(0xffe8c4, 2.55);
     sun.position.set(-5, 9, 8);
     sun.castShadow = true;
-    sun.shadow.mapSize.set(isMobile() ? 768 : 1280, isMobile() ? 768 : 1280);
+    sun.shadow.mapSize.set(lowPower() ? 512 : 1024, lowPower() ? 512 : 1024);
     Object.assign(sun.shadow.camera, { left: -11, right: 11, top: 10, bottom: -10, near: 0.5, far: 48 });
     sun.shadow.bias = -0.00025;
     scene.add(sun);
@@ -251,9 +248,7 @@ export default function RoadWorld({ progress, gameMode, gameInput, gameSpawn, on
       const lateral = V(-tangent.z, 0, tangent.x).normalize();
       return point.addScaledVector(lateral, side * offset);
     };
-    addRoadNeighborhood(scene, roadPath, roadHalfWidth, roadsideAt, isMobile());
-    const avatar = makeRoadAvatar();
-    scene.add(avatar.root);
+    addRoadNeighborhood(scene, roadPath, roadHalfWidth, roadsideAt, lowPower());
     const vergeGrain = vergeTexture();
     const vergeMaterial = new THREE.MeshStandardMaterial({
       map: vergeGrain.color,
@@ -326,7 +321,7 @@ export default function RoadWorld({ progress, gameMode, gameInput, gameSpawn, on
       shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\ntransformed.x += position.y * position.y * sin(roadTime * 0.8 + instanceMatrix[3].x * 1.3 + instanceMatrix[3].z * 0.8) * 0.23;');
       grassShader = shader;
     };
-    const grassCount = isMobile() ? 2200 : 8000;
+    const grassCount = lowPower() ? 1600 : 8000;
     const grass = new THREE.InstancedMesh(bladeGeometry, bladeMaterial, grassCount);
     const dummy = new THREE.Object3D();
     let grassSeed = 29417;
@@ -377,10 +372,10 @@ export default function RoadWorld({ progress, gameMode, gameInput, gameSpawn, on
     }
 
     const flowerBeds = [];
-    const flowerStops = [0.065, 0.2, 0.36, 0.53, 0.69, 0.87];
+    const flowerStops = lowPower() ? [0.065, 0.36, 0.69, 0.87] : [0.065, 0.2, 0.36, 0.53, 0.69, 0.87];
     flowerStops.forEach((station, stationIndex) => {
       for (const side of [-1, 1]) {
-        for (let patch = 0; patch < 2; patch++) {
+        for (let patch = 0; patch < (lowPower() ? 1 : 2); patch++) {
           const t = Math.max(0.002, station + (patch ? 0.012 : -0.002));
           const point = roadsideAt(t, side, roadHalfWidth(t) + (patch ? 2.37 : 2.04));
           point.y += vergeHeight(patch ? 2.37 : 2.04) + 0.02;
@@ -482,34 +477,6 @@ export default function RoadWorld({ progress, gameMode, gameInput, gameSpawn, on
     const cameraPath = new THREE.CatmullRomCurve3([V(-0.1, 4.8, 30), V(0.55, 5.35, 20), V(-0.75, 6.65, 10), V(0.7, 8.35, 0), V(-0.65, 10.45, -10)], false, 'catmullrom', 0.22);
     const lookPath = new THREE.CatmullRomCurve3([V(0.9, 2.95, 14), V(-1.2, 3.65, 4), V(1.5, 5.3, -6), V(-1.35, 7.25, -16), V(1.2, 9.5, -26)], false, 'catmullrom', 0.22);
     let currentProgress = progress.current;
-    let gameT = ROAD_STATIONS[0].t;
-    let gameLateral = 0;
-    let gameBlend = 0;
-    let wasPlaying = false;
-    let hasExplored = false;
-    let nearestStation = -2;
-    let lastPositionReport = 0;
-    const gameKeys = new Set();
-    const gameCamera = V();
-    const gameLook = V();
-    const gamePoint = V();
-    const gameTangent = V();
-    const gameSide = V();
-    const onGameKeyDown = event => {
-      if (!gameModeRef.current || ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target?.tagName)) return;
-      const key = event.key.toLowerCase();
-      if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' ', 'w', 'a', 's', 'd', 'shift', 'e'].includes(key)) event.preventDefault();
-      if (key === 'e' && !event.repeat) {
-        const index = ROAD_STATIONS.findIndex(station => Math.abs(station.t - gameT) < 0.045);
-        if (index >= 0) callbacksRef.current.onGameVisit(index);
-      }
-      gameKeys.add(key);
-    };
-    const onGameKeyUp = event => gameKeys.delete(event.key.toLowerCase());
-    const clearGameKeys = () => gameKeys.clear();
-    window.addEventListener('keydown', onGameKeyDown);
-    window.addEventListener('keyup', onGameKeyUp);
-    window.addEventListener('blur', clearGameKeys);
     const pointer = new THREE.Vector2();
     const targetPointer = new THREE.Vector2();
     const onPointerMove = event => {
@@ -518,6 +485,8 @@ export default function RoadWorld({ progress, gameMode, gameInput, gameSpawn, on
     };
     window.addEventListener('pointermove', onPointerMove, { passive: true });
     let last = performance.now();
+    let sampledFrames = 0;
+    let sampledTime = 0;
     let frameId;
     const render = now => {
       if (disposed) return;
@@ -526,72 +495,25 @@ export default function RoadWorld({ progress, gameMode, gameInput, gameSpawn, on
       const targetProgress = THREE.MathUtils.clamp(progress.current, 0, 4);
       currentProgress += (targetProgress - currentProgress) * (1 - Math.exp(-dt * 4.8));
       const t = currentProgress / 4;
-      const playing = gameModeRef.current;
-      if (playing && !wasPlaying) {
-        const spawn = Number(gameSpawn?.current);
-        if (!hasExplored) gameT = Number.isFinite(spawn) ? THREE.MathUtils.clamp(spawn, 0.035, 0.955) : ROAD_STATIONS[0].t;
-        hasExplored = true;
-        avatar.root.visible = true;
-      }
-      if (!playing && wasPlaying) {
-        gameKeys.clear();
-        gameInput.current = {};
-        nearestStation = -2;
-        callbacksRef.current.onStationChange(-1);
-      }
-      wasPlaying = playing;
-      gameBlend += ((playing ? 1 : 0) - gameBlend) * (1 - Math.exp(-dt * 3.5));
-      if (!playing && gameBlend < 0.01) avatar.root.visible = false;
-      let forwardSpeed = 0;
-      if (playing) {
-        const input = gameInput.current;
-        const forward = Number(Boolean(gameKeys.has('w') || gameKeys.has('arrowup') || input.forward)) - Number(Boolean(gameKeys.has('s') || gameKeys.has('arrowdown') || input.back));
-        const across = Number(Boolean(gameKeys.has('d') || gameKeys.has('arrowright') || input.right)) - Number(Boolean(gameKeys.has('a') || gameKeys.has('arrowleft') || input.left));
-        forwardSpeed = forward * (gameKeys.has('shift') ? 0.065 : 0.038);
-        gameT = THREE.MathUtils.clamp(gameT + forwardSpeed * dt, 0.025, 0.968);
-        if (!Number.isFinite(gameT)) gameT = ROAD_STATIONS[0].t;
-        gameLateral = THREE.MathUtils.clamp(gameLateral + across * dt * 0.82, -roadHalfWidth(gameT) + 0.28, roadHalfWidth(gameT) - 0.28);
-        const nearby = ROAD_STATIONS.findIndex(station => Math.abs(station.t - gameT) < 0.045);
-        if (nearby !== nearestStation) {
-          nearestStation = nearby;
-          callbacksRef.current.onStationChange(nearby);
-        }
-        if (now - lastPositionReport > 180) {
-          callbacksRef.current.onGamePosition(gameT);
-          lastPositionReport = now;
-        }
-      }
-      roadPath.getPointAt(gameT, gamePoint);
-      roadPath.getTangentAt(gameT, gameTangent).normalize();
-      gameSide.set(-gameTangent.z, 0, gameTangent.x).normalize();
-      gamePoint.addScaledVector(gameSide, gameLateral);
-      avatar.root.position.copy(gamePoint).add(V(0, 0.035, 0));
-      avatar.root.quaternion.setFromUnitVectors(V(0, 0, -1), gameTangent.clone().setY(0).normalize());
-      avatar.update(now * 0.001, forwardSpeed, gameLateral);
-      gameCamera.copy(gamePoint).addScaledVector(gameTangent, -4.7).addScaledVector(gameSide, 0.35).add(V(0, 2.55, 0));
-      gameLook.copy(gamePoint).addScaledVector(gameTangent, 3.4).add(V(0, 1.34, 0));
       cameraPath.getPoint(t, camera.position);
       lookPath.getPoint(t, cameraTarget);
       pointer.lerp(targetPointer, 1 - Math.exp(-dt * 3.8));
-      camera.position.x += pointer.x * 0.28 * (1 - gameBlend);
-      camera.position.y -= pointer.y * 0.14 * (1 - gameBlend);
-      cameraTarget.x += pointer.x * 0.45 * (1 - gameBlend);
-      cameraTarget.y -= pointer.y * 0.18 * (1 - gameBlend);
-      camera.position.lerp(gameCamera, gameBlend);
-      cameraTarget.lerp(gameLook, gameBlend);
+      camera.position.x += pointer.x * 0.28;
+      camera.position.y -= pointer.y * 0.14;
+      cameraTarget.x += pointer.x * 0.45;
+      cameraTarget.y -= pointer.y * 0.18;
       camera.lookAt(cameraTarget);
       const roadTangent = roadPath.getTangentAt(t).normalize();
-      camera.rotation.z += (-roadTangent.x * 0.018 + Math.sin(now * 0.00028) * 0.002) * (1 - gameBlend);
-      camera.fov = THREE.MathUtils.lerp(48 + Math.sin(now * 0.00019) * 0.12, 54, gameBlend);
+      camera.rotation.z += -roadTangent.x * 0.018 + Math.sin(now * 0.00028) * 0.002;
+      camera.fov = 48 + Math.sin(now * 0.00019) * 0.12;
       camera.updateProjectionMatrix();
       camera.updateMatrixWorld();
-      const lightT = THREE.MathUtils.lerp(t, gameT, gameBlend);
-      const lightBand = Math.min(3, Math.floor(lightT * 4));
-      const lightMix = lightT * 4 - lightBand;
+      const lightBand = Math.min(3, Math.floor(t * 4));
+      const lightMix = t * 4 - lightBand;
       currentSunColor.copy(chapterLightStops[lightBand]).lerp(chapterLightStops[lightBand + 1], lightMix);
       sun.color.copy(currentSunColor);
-      sun.intensity = 2.25 + lightT * 0.42;
-      sun.position.set(-5 + lightT * 5.5, 11 + lightT * 5, 8 - lightT * 3.5);
+      sun.intensity = 2.25 + t * 0.42;
+      sun.position.set(-5 + t * 5.5, 11 + t * 5, 8 - t * 3.5);
       scene.fog.color.copy(currentSunColor).lerp(new THREE.Color(0xc3d7e4), 0.74);
       const cameraForward = camera.getWorldDirection(V());
       cursorPlane.setFromNormalAndCoplanarPoint(cameraForward, camera.position.clone().addScaledVector(cameraForward, 7.2));
@@ -612,15 +534,30 @@ export default function RoadWorld({ progress, gameMode, gameInput, gameSpawn, on
         mark.position.set(point.x, point.y + 0.025, point.z);
         mark.quaternion.setFromUnitVectors(V(0, 0, -1), tangent);
       });
-      composer.render(dt);
+      if (composer) composer.render(dt);
+      else renderer.render(scene, camera);
+      if (!document.hidden && dt > 0.001) {
+        sampledFrames++;
+        sampledTime += dt;
+        if (sampledFrames >= 75) {
+          const averageFrame = sampledTime / sampledFrames;
+          const nextScale = averageFrame > 0.038 ? Math.max(0.7, adaptiveScale - 0.1)
+            : averageFrame < 0.022 ? Math.min(1, adaptiveScale + 0.05) : adaptiveScale;
+          if (nextScale !== adaptiveScale) { adaptiveScale = nextScale; resize(); }
+          sampledFrames = 0;
+          sampledTime = 0;
+        }
+      }
       frameId = requestAnimationFrame(render);
     };
     const cameraTarget = V();
     const resize = () => {
       renderer.setPixelRatio(pixelRatio());
       renderer.setSize(innerWidth, innerHeight, false);
-      composer.setPixelRatio(pixelRatio());
-      composer.setSize(innerWidth, innerHeight);
+      if (composer) {
+        composer.setPixelRatio(pixelRatio());
+        composer.setSize(innerWidth, innerHeight);
+      }
       camera.aspect = innerWidth / innerHeight;
       camera.updateProjectionMatrix();
     };
@@ -633,10 +570,7 @@ export default function RoadWorld({ progress, gameMode, gameInput, gameSpawn, on
       cancelAnimationFrame(frameId);
       window.removeEventListener('resize', resize);
       window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('keydown', onGameKeyDown);
-      window.removeEventListener('keyup', onGameKeyUp);
-      window.removeEventListener('blur', clearGameKeys);
-      composer.dispose();
+      composer?.dispose();
       pmremGenerator.dispose();
       if (hdrTexture) hdrTexture.dispose();
       if (environmentMap) environmentMap.dispose();

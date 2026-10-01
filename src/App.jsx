@@ -1,13 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { chapters, activities, departments, timeline, recruitmentUrl, recruitmentIntro, recruitmentRounds, campaignImages } from './content';
-import { ROAD_STATIONS } from './road-game-data';
 import recLogoUrl from '../recftu_logo.jpg';
-import bndSkyOfficial from '../assets/images/bnd-sky-official.jpg';
 import gen16Cover from '../assets/images/gen16-bnd/bnd-ttv-cover.png';
 import gen16FormBanner from '../assets/images/gen16-bnd/form-banner.png';
-import bndSkyBg from '../assets/images/gen16-bnd/sky-bg.png';
-import bndFtuBuilding from '../assets/images/gen16-bnd/ftu-building.png';
-import bndSignKey from '../assets/images/gen16-bnd/sign-key.png';
 import noteVongDon from '../assets/images/gen16-bnd/note-vong-don.png';
 import noteVongDgnl from '../assets/images/gen16-bnd/note-vong-dgnl.png';
 import noteVongTeamwork from '../assets/images/gen16-bnd/note-vong-teamwork.png';
@@ -188,19 +183,13 @@ export default function App() {
   const [departmentIndex, setDepartmentIndex] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [pressOpen, setPressOpen] = useState(false);
-  const [gameMode, setGameMode] = useState(false);
-  const [nearStation, setNearStation] = useState(-1);
-  const [gamePosition, setGamePosition] = useState(ROAD_STATIONS[0].t);
-  const [visitedStations, setVisitedStations] = useState([]);
-  const gameInput = useRef({});
-  const gameSpawn = useRef(ROAD_STATIONS[0].t);
   const progress = useRef(tabParamVal ?? 0);
   const targetProgress = useRef(tabParamVal ?? 0);
   const scrollRange = useRef(1);
   const progressLine = useRef(null);
   const scrollTrackRef = useRef(null);
   const sceneState = useRef({ modal: false, activity: 0 });
-  sceneState.current = { ...sceneState.current, modal: !!selection, gameMode, activity: activityIndex, department: departmentIndex };
+  sceneState.current = { ...sceneState.current, modal: !!selection, activity: activityIndex, department: departmentIndex };
 
   const goTo = useCallback((index) => {
     const clamped = Math.max(0, Math.min(4, index));
@@ -211,27 +200,9 @@ export default function App() {
     if (progressLine.current) progressLine.current.style.transform = `scaleX(${clamped / 4})`;
     sceneState.current.focusRequest = (sceneState.current.focusRequest || 0) + 1;
     setMenuOpen(false);
-    setGameMode(false);
   }, []);
-  const startExplore = useCallback(() => {
-    gameSpawn.current = ROAD_STATIONS[chapter].t;
-    setSelection(null);
-    setPressOpen(false);
-    setGameMode(true);
-  }, [chapter]);
-  const visitStation = useCallback(index => {
-    if (index < 0 || index >= ROAD_STATIONS.length) return;
-    setVisitedStations(current => current.includes(index) ? current : [...current, index]);
-    goTo(index);
-  }, [goTo]);
   const onReady = useCallback(() => setReady(true), []);
   const onFailure = useCallback(() => { setFailure(true); setReady(true); }, []);
-  const onPick = useCallback((kind, index) => {
-    if (kind === 'vietnam') goTo(1);
-    else if (kind === 'activity') { setActivityIndex(index); setSelection({ type: 'activity', index }); }
-    else if (kind === 'department') setSelection({ type: 'department', index });
-  }, [goTo]);
-
   useEffect(() => {
     // The DOM and WebGL camera consume the same eased clock. No second scroll tween.
     let measuredHeight = window.innerHeight;
@@ -264,10 +235,6 @@ export default function App() {
       frame = requestAnimationFrame(advance);
     };
     const key = event => {
-      if (sceneState.current.gameMode) {
-        if (event.key === 'Escape') setGameMode(false);
-        return;
-      }
       if (sceneState.current.modal || ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName)) return;
       if (event.key === 'Escape') setMenuOpen(false);
       if (['ArrowDown', 'PageDown', 'ArrowUp', 'PageUp'].includes(event.key)) {
@@ -303,33 +270,19 @@ export default function App() {
     if (index != null) goTo(index);
   }, [goTo]);
   useEffect(() => { history.replaceState(null, '', `#${chapters[chapter].id}`); }, [chapter]);
-  useEffect(() => {
-    document.body.classList.toggle('road-game-active', gameMode);
-    return () => document.body.classList.remove('road-game-active');
-  }, [gameMode]);
   const activeActivity = activities[activityIndex];
   return <>
     <div ref={scrollTrackRef} className="scroll-track" aria-hidden="true" />
-    <div className={`experience chapter-${chapter} ${ready ? 'is-ready' : ''} ${gameMode ? 'game-mode' : ''}`}>
+    <div className={`experience chapter-${chapter} ${ready ? 'is-ready' : ''}`}>
       <a href="#chapter-content" className="skip-link">Đến nội dung</a>
       <div className="bnd-stage-backdrop" aria-hidden="true">
         <div className="bnd-sky-official-layer" />
         <div className="bnd-sky-overlay-gradient" />
       </div>
-      {!failure && <React.Suspense fallback={null}><RoadWorld progress={progress} gameMode={gameMode} gameInput={gameInput} gameSpawn={gameSpawn} onStationChange={setNearStation} onGameVisit={visitStation} onGamePosition={setGamePosition} onReady={onReady} onFailure={onFailure} /></React.Suspense>}
+      {!failure && <React.Suspense fallback={null}><RoadWorld progress={progress} onReady={onReady} onFailure={onFailure} /></React.Suspense>}
       <div className="scene-shade" aria-hidden="true" />
       <div className="scene-colorwash" aria-hidden="true" />
       <div className="reading-progress" aria-hidden="true"><div ref={progressLine} /></div>
-      {!failure && <button className="explore-launch" onClick={gameMode ? () => setGameMode(false) : startExplore}>{gameMode ? '← TRỞ VỀ TRANG ĐỌC' : '✦ CHƠI KHÁM PHÁ 3D'}</button>}
-      {gameMode && <aside className="game-hud" aria-label="Hướng dẫn khám phá ROAD">
-        <div className="game-hud-title"><span>REC FTU · GEN 16</span><strong>CON ĐƯỜNG VỀ NHÀ</strong><p>Đi theo con đường, ghé 5 điểm dừng để khám phá REC.</p></div>
-        <div className="game-route"><div className="game-route-track"><i style={{ width: `${Math.round(gamePosition * 100)}%` }} /></div><span>{Math.round(gamePosition * 100)}% HÀNH TRÌNH · {visitedStations.length}/5 ĐÃ GHÉ</span></div>
-        <div className="game-hint">WASD / PHÍM MŨI TÊN để đi · SHIFT để chạy · E để mở câu chuyện</div>
-        {nearStation >= 0 && <div className="game-station-card" aria-live="polite"><span>ĐIỂM DỪNG 0{nearStation + 1} / 05</span><strong>{ROAD_STATIONS[nearStation].title}</strong><p>{ROAD_STATIONS[nearStation].hint}</p><button onClick={() => visitStation(nearStation)}>MỞ CÂU CHUYỆN ↗</button></div>}
-        <div className="game-touch-controls" aria-label="Điều khiển cảm ứng">
-          {[['left', '←', 'Sang trái'], ['forward', '↑', 'Đi tới'], ['back', '↓', 'Đi lùi'], ['right', '→', 'Sang phải']].map(([direction, glyph, label]) => <button key={direction} aria-label={label} onPointerDown={event => { event.currentTarget.setPointerCapture(event.pointerId); gameInput.current[direction] = true; }} onPointerUp={() => { gameInput.current[direction] = false; }} onPointerCancel={() => { gameInput.current[direction] = false; }} onLostPointerCapture={() => { gameInput.current[direction] = false; }}>{glyph}</button>)}
-        </div>
-      </aside>}
       <header className="site-header">
         <button className="brand" onClick={() => goTo(0)} aria-label="CLB Nghiên cứu Thị trường Bất động sản, Trường Đại học Ngoại Thương — về đầu hành trình">
           <img className="brand-logo" src={recLogoUrl} alt="Logo Trường Đại học Ngoại Thương" />
@@ -343,7 +296,7 @@ export default function App() {
         </div>
       </header>
 
-      <main id="chapter-content" className="story-stage" tabIndex={-1} inert={gameMode}>
+      <main id="chapter-content" className="story-stage" tabIndex={-1}>
         {chapters.map((story, panelIndex) => <section key={story.id} className={`story-layer chapter-${panelIndex} ${chapter === panelIndex ? 'active' : ''}`} inert={chapter !== panelIndex} aria-hidden={chapter !== panelIndex}>
         <div className="chapter-content"><div className="chapter-copy">
           {panelIndex === 0 && <>
