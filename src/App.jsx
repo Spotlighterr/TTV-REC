@@ -102,15 +102,16 @@ function Detail({ selection, onClose }) {
   }, []);
   const isDept = selection.type === 'department';
   const isTimeline = selection.type === 'timeline';
-  const item = isDept ? departments[selection.index] : selection.type === 'campaign' ? campaignImages[selection.index] : activities[selection.index || 0];
+  const isStory = selection.type === 'story';
+  const item = isStory ? null : isDept ? departments[selection.index] : selection.type === 'campaign' ? campaignImages[selection.index] : activities[selection.index || 0];
   return <dialog ref={dialog} className={`detail-dialog ${isTimeline ? 'timeline-dialog' : ''}`} onCancel={onClose} onClick={event => { if (event.target === dialog.current) onClose(); }} aria-labelledby="detail-title">
     <div className="detail-shell">
       <button className="close-button" onClick={onClose} aria-label="Đóng chi tiết">✕</button>
-      {!isDept && !isTimeline && selection.type !== 'campaign' && <img className="detail-image" src={item.image} alt={item.name} />}
+      {!isDept && !isTimeline && !isStory && selection.type !== 'campaign' && <img className="detail-image" src={item.image} alt={item.name} />}
       <div className="detail-body">
-        <p className="eyebrow">{isTimeline ? 'HÀNH TRÌNH ĐẾN NHÀ REC' : isDept ? `MẢNH GHÉP ${item.number} / REC FTU` : selection.type === 'campaign' ? 'TUYỂN THÀNH VIÊN GEN 16' : 'NHẬT KÝ NHÀ REC'}</p>
-        <h2 id="detail-title">{isTimeline ? 'Từ lá đơn đến đồng đội.' : isDept ? item.title : item.name}</h2>
-        {selection.type === 'campaign' ? <><img className="detail-image" src={item.image} alt={item.name} /><p className="detail-tag">{item.tag}</p></> : isTimeline ? <>
+        <p className="eyebrow">{isStory ? 'CÂU CHUYỆN GEN 16' : isTimeline ? 'HÀNH TRÌNH ĐẾN NHÀ REC' : isDept ? `MẢNH GHÉP ${item.number} / REC FTU` : selection.type === 'campaign' ? 'TUYỂN THÀNH VIÊN GEN 16' : 'NHẬT KÝ NHÀ REC'}</p>
+        <h2 id="detail-title">{isStory ? 'Con đường về Nhà REC.' : isTimeline ? 'Từ lá đơn đến đồng đội.' : isDept ? item.title : item.name}</h2>
+        {isStory ? <div className="story-dialog-copy">{recruitmentIntro.map(paragraph => <p key={paragraph}>{paragraph}</p>)}</div> : selection.type === 'campaign' ? <><img className="detail-image" src={item.image} alt={item.name} /><p className="detail-tag">{item.tag}</p></> : isTimeline ? <>
           <ol className="recruitment-timeline">{timeline.map(([title, description], i) => <li key={title}><span>0{i + 1}</span><div><h3>{title}</h3><p>{description}</p></div></li>)}</ol>
           <p className="detail-note">Tụi mình sẽ cập nhật lịch tuyển và cách nộp đơn trên fanpage REC FTU nhé.</p>
           <a className="button primary" href={recruitmentUrl} target="_blank" rel="noreferrer">Xem thông tin ứng tuyển <Arrow /></a>
@@ -273,10 +274,9 @@ export default function App() {
           </>}
           {panelIndex === 1 && <>
             <h2>Hà Nội.<br />Ngoại Thương.<br /><em>REC Là Nhà.</em></h2>
-            <p className="chapter-description">{recruitmentIntro[0]}</p>
-            <p className="chapter-description">{recruitmentIntro[1]}</p>
+            <p className="chapter-description">Mỗi người đến Ngoại Thương từ một điểm xuất phát khác nhau. Ở REC, những cuộc gặp bình thường dần thành tình bạn và một nơi để gọi là nhà.</p>
             <div className="location-card"><span className="location-symbol">↗</span><div><strong>CLB Nghiên cứu Thị trường Bất động sản</strong><p>Trường Đại học Ngoại Thương</p><small>91 Chùa Láng · Hà Nội</small></div></div>
-            <button className="text-link" onClick={() => goTo(2)}>Khám phá Nhà REC <Arrow /></button>
+            <div className="story-links"><button className="text-link" onClick={() => setSelection({ type: 'story' })}>Đọc câu chuyện REC <Arrow /></button><button className="text-link" onClick={() => goTo(2)}>Khám phá Nhà REC <Arrow /></button></div>
           </>}
           {panelIndex === 2 && <>
             <h2>Chuyện tụi mình<br /><em>đã cùng làm.</em></h2>

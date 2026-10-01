@@ -2360,3 +2360,12 @@ button {
   .chapter-nav>button.active .chapter-icon { color:#ffc194; }
   .chapter-nav>button>i { bottom:2px; left:20%; right:20%; }
 }
+
+.story-links { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; max-width:420px; }
+.story-links .text-link { width:100%; justify-content:space-between; gap:6px; text-align:left; }
+.story-dialog-copy { max-width:720px; margin-top:20px; }
+.story-dialog-copy p+p { margin-top:18px; }
+@media(max-width:760px) {
+  .story-links { gap:8px; }
+  .story-links .text-link { min-height:40px; font-size:10px; line-height:1.25; }
+}
