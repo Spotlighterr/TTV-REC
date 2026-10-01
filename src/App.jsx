@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import RecWorld from './rec-world.jsx';
-import { chapters, activities, departments, internalActivities, timeline, recruitmentUrl } from './content';
+import { chapters, activities, departments, internalActivities, timeline, recruitmentUrl, recruitmentIntro, recruitmentRounds, campaignImages } from './content';
 import recLogoUrl from '../recftu_logo.jpg';
 import oldRecMark from '../assets/images/wix_asset_1.png';
 import oldCampaignCover from '../assets/images/wix_asset_2.png';
@@ -10,7 +10,16 @@ import oldRecNumbers from '../assets/images/wix_asset_5.png';
 
 const Arrow = () => <span aria-hidden="true">↗</span>;
 
-const registrationDeadline = new Date('2026-10-20T00:00:00+07:00').getTime();
+const chapterIconPaths = [
+  <><circle cx="12" cy="12" r="8" /><path d="M4 12h16M12 4c2.5 2.5 2.5 13.5 0 16M12 4c-2.5 2.5-2.5 13.5 0 16" /></>,
+  <><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 0 1 14 0Z" /><circle cx="12" cy="10" r="2" /></>,
+  <><rect x="3" y="4" width="18" height="16" rx="1" /><circle cx="8" cy="9" r="1.5" /><path d="m4 18 5-5 3 3 3-4 5 6" /></>,
+  <><circle cx="9" cy="9" r="3" /><circle cx="17" cy="10" r="2" /><path d="M3 20v-2a6 6 0 0 1 12 0v2M15 15a5 5 0 0 1 6 5" /></>,
+  <><path d="m3 11 9-8 9 8M5 10v10h14V10M10 20v-6h4v6" /></>,
+];
+const ChapterIcon = ({ index }) => <svg className="chapter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{chapterIconPaths[index]}</svg>;
+
+const registrationDeadline = new Date('2026-10-21T00:00:00+07:00').getTime();
 const archivedTitles = {
   '01-text-effect1': 'Tiêu đề tuyển thành viên Gen 15',
   '02-legacy-980': 'Ảnh chiến dịch REC Gen 15',
@@ -28,6 +37,20 @@ const archivedTitles = {
   '14-legacy-600': 'Ảnh tư liệu REC Gen 15',
   '15-clb_edited': 'CLB Nghiên cứu Thị trường Bất động sản',
   '16-legacy-311': 'Ảnh tư liệu REC Gen 15',
+  'gen16-recruitment': 'Tuyển thành viên Gen 16',
+  'gen16-open-applications': 'Mở đơn Gen 16',
+  'the-real-contest-final': 'The Real Contest · Khoảnh khắc chung kết',
+  'the-real-contest-evening': 'Đêm chung kết The Real Contest',
+  'the-real-seminar': 'Hội thảo chuyên môn REC',
+  'company-visit': 'Thăm quan doanh nghiệp',
+  'the-maze-2026': 'The Maze 2026',
+  'member-birthday': 'Sinh nhật REC',
+  'rec-birthday-2026': 'Sinh nhật CLB 2026',
+  'secret-santa': 'Secret Santa',
+  'cuu-ke-em-nghe': 'Cựu kể em nghe',
+  'rec-outing': 'Đi chơi xa cùng Nhà REC',
+  'the-maze': 'Ấn phẩm The Maze',
+  'cuu-ke-em-nghe-banner': 'Ấn phẩm Cựu kể em nghe',
 };
 
 function RegistrationCountdown() {
@@ -44,17 +67,20 @@ function RegistrationCountdown() {
     ['GIÂY', totalSeconds % 60],
   ];
   return <div className="registration-countdown" aria-label={remaining ? 'Thời gian còn lại để đăng ký' : 'Đã hết hạn đăng ký'}>
-    <div className="countdown-heading"><span>{remaining ? 'MỞ ĐƠN 01.10 · CÒN LẠI' : 'ĐÃ KHÉP ĐƠN GEN 16'}</span><time dateTime="2026-10-20T00:00:00+07:00">ĐÓNG 20.10 · 00:00</time></div>
+    <div className="countdown-heading"><span>{remaining ? 'MỞ ĐƠN 01.10 · CÒN LẠI' : 'ĐÃ KHÉP ĐƠN GEN 16'}</span><time dateTime="2026-10-20">ĐÓNG 20.10</time></div>
     {remaining > 0 && <div className="countdown-units">{units.map(([label, value]) => <div key={label}><strong>{String(value).padStart(2, '0')}</strong><span>{label}</span></div>)}</div>}
   </div>;
 }
 
-const pressFiles = Object.entries(import.meta.glob('../assets/press/**/*.{png,jpg,jpeg,webp,avif}', { eager: true, query: '?url', import: 'default' }))
+const pressFiles = Object.entries({
+  ...import.meta.glob('../assets/press/**/*.{png,jpg,jpeg,webp,avif}', { eager: true, query: '?url', import: 'default' }),
+  ...import.meta.glob('../assets/images/gen16/*.{png,jpg,jpeg,webp,avif}', { eager: true, query: '?url', import: 'default' }),
+})
   .sort(([a], [b]) => a.localeCompare(b, 'vi', { numeric: true }))
   .map(([path, src]) => {
     const filename = path.split('/').pop().replace(/\.[^.]+$/, '');
     const name = filename.replace(/^\d+[-_ ]*/, '').replace(/[-_]+/g, ' ').trim();
-    return { src, name: archivedTitles[filename] || name || filename, legacy: path.includes('/gen15/'), season: path.includes('/gen15/') ? 'GEN 15 · LƯU TRỮ' : 'GEN 16 · ẤN PHẨM MỚI' };
+    return { src, name: archivedTitles[filename] || name || filename, legacy: path.includes('/gen15/'), featured: filename === 'gen16-recruitment', season: path.includes('/gen15/') ? 'GEN 15 · LƯU TRỮ' : 'GEN 16 · ẤN PHẨM MỚI' };
   });
 const archivedArtwork = [
   { src: oldCampaignCover, name: 'RECERIE · tuyển thành viên Gen 15', legacy: true, season: 'GEN 15 · LƯU TRỮ' },
@@ -76,15 +102,15 @@ function Detail({ selection, onClose }) {
   }, []);
   const isDept = selection.type === 'department';
   const isTimeline = selection.type === 'timeline';
-  const item = isDept ? departments[selection.index] : activities[selection.index || 0];
+  const item = isDept ? departments[selection.index] : selection.type === 'campaign' ? campaignImages[selection.index] : activities[selection.index || 0];
   return <dialog ref={dialog} className={`detail-dialog ${isTimeline ? 'timeline-dialog' : ''}`} onCancel={onClose} onClick={event => { if (event.target === dialog.current) onClose(); }} aria-labelledby="detail-title">
     <div className="detail-shell">
       <button className="close-button" onClick={onClose} aria-label="Đóng chi tiết">✕</button>
-      {!isDept && !isTimeline && <img className="detail-image" src={item.image} alt={item.name} />}
+      {!isDept && !isTimeline && selection.type !== 'campaign' && <img className="detail-image" src={item.image} alt={item.name} />}
       <div className="detail-body">
-        <p className="eyebrow">{isTimeline ? 'HÀNH TRÌNH ĐẾN NHÀ REC' : isDept ? `MẢNH GHÉP ${item.number} / REC FTU` : 'NHẬT KÝ NHÀ REC'}</p>
+        <p className="eyebrow">{isTimeline ? 'HÀNH TRÌNH ĐẾN NHÀ REC' : isDept ? `MẢNH GHÉP ${item.number} / REC FTU` : selection.type === 'campaign' ? 'TUYỂN THÀNH VIÊN GEN 16' : 'NHẬT KÝ NHÀ REC'}</p>
         <h2 id="detail-title">{isTimeline ? 'Từ lá đơn đến đồng đội.' : isDept ? item.title : item.name}</h2>
-        {isTimeline ? <>
+        {selection.type === 'campaign' ? <><img className="detail-image" src={item.image} alt={item.name} /><p className="detail-tag">{item.tag}</p></> : isTimeline ? <>
           <ol className="recruitment-timeline">{timeline.map(([title, description], i) => <li key={title}><span>0{i + 1}</span><div><h3>{title}</h3><p>{description}</p></div></li>)}</ol>
           <p className="detail-note">Tụi mình sẽ cập nhật lịch tuyển và cách nộp đơn trên fanpage REC FTU nhé.</p>
           <a className="button primary" href={recruitmentUrl} target="_blank" rel="noreferrer">Xem thông tin ứng tuyển <Arrow /></a>
@@ -120,7 +146,7 @@ function PressDialog({ onClose }) {
       <section className="press-archive" aria-label="Thư viện ấn phẩm và hình ảnh REC">
         <div className="press-archive-heading"><div><span>THƯ VIỆN HÌNH ẢNH</span><h3>REC qua những mùa.</h3></div><span>{String(pressAssets.length).padStart(2, '0')} TƯ LIỆU</span></div>
         <div className="press-grid">{pressAssets.map((item, index) => <a className={`press-card ${item.legacy ? 'archive-card' : ''}`} href={item.src} target="_blank" rel="noreferrer" key={`${item.src}-${index}`} aria-label={`Mở ảnh: ${item.name}`}><img src={item.src} alt={item.name} loading="lazy" /><div><span>{item.season}</span><strong>{item.name}</strong><span aria-hidden="true">↗</span></div></a>)}</div>
-        {!pressAssets.some(item => !item.legacy) && <p className="press-upload-note">Ấn phẩm Gen 16 mới sẽ hiện ở đây khi được thêm vào <code>assets/press</code>.</p>}
+          {!pressAssets.some(item => !item.legacy) && <p className="press-upload-note">Ấn phẩm Gen 16 mới sẽ hiện ở đây khi được thêm vào <code>assets/press</code>.</p>}
       </section>
     </div>
   </dialog>;
@@ -251,7 +277,8 @@ export default function App() {
           </>}
           {panelIndex === 1 && <>
             <h2>Hà Nội.<br />Ngoại Thương.<br /><em>REC Là Nhà.</em></h2>
-            <p className="chapter-description">Ở 91 Chùa Láng, tụi mình cùng học, cùng làm và khám phá thêm nhiều điều thú vị về bất động sản.</p>
+            <p className="chapter-description">{recruitmentIntro[0]}</p>
+            <p className="chapter-description">{recruitmentIntro[1]}</p>
             <div className="location-card"><span className="location-symbol">↗</span><div><strong>CLB Nghiên cứu Thị trường Bất động sản</strong><p>Trường Đại học Ngoại Thương</p><small>91 Chùa Láng · Hà Nội</small></div></div>
             <button className="text-link" onClick={() => goTo(2)}>Khám phá Nhà REC <Arrow /></button>
           </>}
@@ -259,6 +286,7 @@ export default function App() {
             <h2>Chuyện tụi mình<br /><em>đã cùng làm.</em></h2>
             <p className="chapter-description">Từ những buổi học, sự kiện đến chuyến đi xa — mỗi dịp lại có thêm chuyện vui để nhớ.</p>
             <div className="activity-preview" key={activityIndex}>
+              <button className="activity-preview-image" onClick={() => setSelection({ type: 'activity', index: activityIndex })} aria-label={`Xem ảnh và câu chuyện: ${activeActivity.name}`}><img src={activeActivity.image} alt={activeActivity.name} /></button>
               <span className="mono">{String(activityIndex + 1).padStart(2, '0')} / {String(activities.length).padStart(2, '0')}</span>
               <h3>{activeActivity.name}</h3><p>{activeActivity.tag}</p>
               <button className="text-link" onClick={() => setSelection({ type: 'activity', index: activityIndex })}>Kể em nghe <Arrow /></button>
@@ -274,10 +302,13 @@ export default function App() {
           {panelIndex === 4 && <>
             <p className="join-kicker">GEN 16 · NHÀ REC ĐANG TÌM ĐỒNG ĐỘI</p>
             <h2>Nhà REC thêm vui.<br /><em>Khi có em.</em></h2>
-            <p className="chapter-description">Tụi mình đang chuẩn bị một mùa Gen 16 mới — cho FindX, The Real Contest và những ý tưởng em muốn thử. Em cứ mang theo sự tò mò; ở REC, tụi mình sẽ cùng học, cùng làm và biến ý tưởng thành chuyện thật.</p>
+            <p className="chapter-description">{recruitmentIntro[2]}</p>
             <div className="join-actions"><a className="button primary" href={recruitmentUrl} target="_blank" rel="noreferrer">Xem cách ứng tuyển <Arrow /></a><button className="button secondary" onClick={() => setSelection({ type: 'timeline' })}>Các vòng sẽ như thế nào? <span>＋</span></button></div>
             <RegistrationCountdown />
-            <p className="micro-note">Tụi mình sẽ cập nhật lịch tuyển và link nộp đơn trên fanpage REC FTU nhé.</p>
+            <div className="join-actions">
+              {campaignImages.map((item, index) => <button className="button secondary" key={item.name} onClick={() => setSelection({ type: 'campaign', index })}>{item.name} <Arrow /></button>)}
+            </div>
+            <p className="micro-note">Lịch tuyển Gen 16: {recruitmentRounds.map(([round, dates]) => `${round} ${dates}`).join(' · ')}. Giờ và nội dung chi tiết từng vòng sẽ được cập nhật trên fanpage REC FTU.</p>
           </>}
         </div></div>
         </section>)}
@@ -292,7 +323,7 @@ export default function App() {
 
       <footer className="journey-footer">
         <div className="journey-intro"><span className="scroll-mouse" aria-hidden="true" /><span>CUỘN ĐỂ<br /><strong>ĐỔI GÓC NHÌN</strong></span></div>
-        <nav className="chapter-nav" aria-label="Các chặng hành trình">{chapters.map((item, i) => <button key={item.id} className={i === chapter ? 'active' : ''} aria-current={i === chapter ? 'step' : undefined} onClick={() => goTo(i)}><span>0{i + 1}</span><strong>{item.name}</strong><i /></button>)}</nav>
+        <nav className="chapter-nav" aria-label="Các chặng hành trình">{chapters.map((item, i) => <button key={item.id} className={i === chapter ? 'active' : ''} aria-label={item.name} title={item.name} aria-current={i === chapter ? 'step' : undefined} onClick={() => goTo(i)}><span>0{i + 1}</span><strong>{item.name}</strong><ChapterIcon index={i} /><i /></button>)}</nav>
         <span className="journey-count"><strong>0{chapter + 1}</strong><span> / 05</span></span>
       </footer>
       <aside className="contact-dock" aria-label="Kênh liên hệ REC">
