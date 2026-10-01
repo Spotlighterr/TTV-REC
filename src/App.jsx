@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import RecWorld from './rec-world.jsx';
-import { chapters, activities, departments, internalActivities, timeline, recruitmentUrl, recruitmentIntro, recruitmentRounds, campaignImages } from './content';
+import { chapters, activities, departments, timeline, recruitmentUrl, recruitmentIntro, recruitmentRounds, campaignImages } from './content';
 import recLogoUrl from '../recftu_logo.jpg';
 import oldRecMark from '../assets/images/wix_asset_1.png';
 import oldCampaignCover from '../assets/images/wix_asset_2.png';
@@ -120,7 +120,6 @@ function Detail({ selection, onClose }) {
           <a className="button primary" href={recruitmentUrl} target="_blank" rel="noreferrer">Cùng ứng tuyển nhé <Arrow /></a>
         </> : <>
           <p className="detail-tag">{item.tag}</p><p>{item.desc}</p>
-          {item.id === 'nha-rec' && <div className="internal-activities">{internalActivities.map(activity => <section key={activity.id}><h3>{activity.name}</h3><p>{activity.desc}</p></section>)}</div>}
         </>}
       </div>
     </div>
@@ -317,7 +316,7 @@ export default function App() {
       {chapter === 3 && <div className="model-console"><div><span className="model-index">0{departmentIndex + 1} / 04</span><strong>{departments[departmentIndex].short}</strong><small>Kéo để xoay · Bấm mô hình để xem chi tiết</small></div><div className="model-switch"><button aria-label="Mô hình trước" onClick={() => setDepartmentIndex(index => (index + 3) % 4)}>←</button><button aria-label="Mô hình tiếp" onClick={() => setDepartmentIndex(index => (index + 1) % 4)}>→</button></div></div>}
 
       <aside className="scene-caption" aria-hidden="true">
-        <div className="scene-data"><svg className="radar-glyph" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="24" /><circle cx="28" cy="28" r="15" /><path d="M28 1v54M1 28h54" /><g className="radar-hand"><path d="M28 28L45 11" /></g><circle className="radar-point" cx="37" cy="17" r="2" /><circle className="radar-center" cx="28" cy="28" r="2" /></svg><div><small>{['ĐIỂM HẸN', 'NGOẠI THƯƠNG · HÀ NỘI', 'REC ARCHIVE', 'CÙNG MỘT QUỸ ĐẠO', 'HẸN GẶP EM'][chapter]}</small><strong>{['Hà Nội, Việt Nam', 'Hà Nội, Ngoại Thương', '05 câu chuyện', '04 mảnh ghép', 'Nhà REC'][chapter]}</strong><span>{['21.0285° N · 105.8542° E', 'REC Là Nhà', 'Học · Làm · Gắn kết', 'Chọn ban để khám phá', 'Thế hệ tiếp theo'][chapter]}</span></div></div>
+        <div className="scene-data"><svg className="radar-glyph" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="24" /><circle cx="28" cy="28" r="15" /><path d="M28 1v54M1 28h54" /><g className="radar-hand"><path d="M28 28L45 11" /></g><circle className="radar-point" cx="37" cy="17" r="2" /><circle className="radar-center" cx="28" cy="28" r="2" /></svg><div><small>{['ĐIỂM HẸN', 'NGOẠI THƯƠNG · HÀ NỘI', 'REC ARCHIVE', 'CÙNG MỘT QUỸ ĐẠO', 'HẸN GẶP EM'][chapter]}</small><strong>{['Hà Nội, Việt Nam', 'Hà Nội, Ngoại Thương', `${String(activities.length).padStart(2, '0')} câu chuyện`, '04 mảnh ghép', 'Nhà REC'][chapter]}</strong><span>{['21.0285° N · 105.8542° E', 'REC Là Nhà', 'Học · Làm · Gắn kết', 'Chọn ban để khám phá', 'Thế hệ tiếp theo'][chapter]}</span></div></div>
         <div className="caption-rule" /><p>{['Góc nhìn lớn. Khởi đầu nhỏ.', 'Từ Ngoại Thương, cùng nhau dựng nên một mái nhà.', 'Những khoảnh khắc trở thành chúng ta.', 'Khác biệt để cùng nhau tiến xa.', 'Hẹn gặp em ở Nhà REC.'][chapter]}</p>
       </aside>
 
