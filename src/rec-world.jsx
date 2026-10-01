@@ -68,7 +68,7 @@ function archipelagoMarker(text, lon, lat, labelOffset) {
   return marker;
 }
 
-export default function RecWorld({ progress, state, pinRef, onReady, onFailure, onPick }) {
+export default function RecWorld({ progress, state, onReady, onFailure, onPick }) {
   const canvasRef = useRef(null);
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -316,14 +316,11 @@ export default function RecWorld({ progress, state, pinRef, onReady, onFailure, 
       allFades.set(group, items);
     });
     const fade = (group, amount) => { group.visible = amount > 0.008; allFades.get(group).forEach(([material, original]) => { material.opacity = original * amount; }); };
-    const dragRotation = new THREE.Quaternion(), pinWorld = V(), centerWorld = V(), screenPosition = V(), normalScratch = V(), cameraScratch = V();
-    let labelWidth = pinRef.current?.offsetWidth || 220;
-    const labelObserver = new ResizeObserver(entries => { labelWidth = entries[0].borderBoxSize?.[0]?.inlineSize || entries[0].contentRect.width; needsRender = true; });
-    if (pinRef.current) labelObserver.observe(pinRef.current);
+    const dragRotation = new THREE.Quaternion();
     let previousTime = performance.now(), time = 0, rotation = 0, frameId;
     let lastActivity = -1, lastDepartment = -1, lastFreeze = false, lastFocus = 0, qualityStart = previousTime + 2500, sampleTime = 0, sampleCount = 0;
     let reveal = 1;
-    let slowWindows = 0, fastWindows = 0, lastLabelVisible = null;
+    let slowWindows = 0, fastWindows = 0;
     const stats = { frames: 0, drawCalls: 0, dpr: renderDpr };
     if (import.meta.env.DEV) canvas.__recStats = stats;
     const render = now => {
@@ -427,17 +424,6 @@ export default function RecWorld({ progress, state, pinRef, onReady, onFailure, 
         hovered = pick()?.object.userData.pick || null;
         canvas.style.cursor = hovered ? 'pointer' : p < 1.65 || Math.abs(p - 3) < .45 ? 'grab' : 'default';
       }
-      if (pinRef.current) {
-        pin.getWorldPosition(pinWorld); earthRig.getWorldPosition(centerWorld);
-        const facing = normalScratch.copy(pinWorld).sub(centerWorld).normalize().dot(cameraScratch.copy(camera.position).sub(centerWorld).normalize());
-        screenPosition.copy(pinWorld).project(camera);
-        const visible = p < 1.7 && facing > 0.2 && Math.abs(screenPosition.x) < 0.86 && Math.abs(screenPosition.y) < 0.8;
-        const label = pinRef.current;
-        if (visible !== lastLabelVisible) { label.style.opacity = visible ? '1' : '0'; label.style.visibility = visible ? 'visible' : 'hidden'; lastLabelVisible = visible; }
-        const pointX = (screenPosition.x * 0.5 + 0.5) * innerWidth;
-        const labelX = pointX + labelWidth + 30 > innerWidth ? pointX - labelWidth - 18 : pointX + 14;
-        label.style.transform = `translate3d(${Math.max(18, labelX)}px,${(-screenPosition.y * 0.5 + 0.5) * innerHeight - 24}px,0)`;
-      }
       // A depth texture must exist before any material samples the directional shadow.
       renderer.shadowMap.needsUpdate = constellation.visible || !sun.shadow.map;
       renderer.render(scene, camera);
@@ -458,7 +444,6 @@ export default function RecWorld({ progress, state, pinRef, onReady, onFailure, 
     resize(); frameId = requestAnimationFrame(render);
     return () => {
       disposed = true; abortController.abort(); cancelAnimationFrame(frameId);
-      labelObserver.disconnect();
       window.removeEventListener('resize', resize); canvas.removeEventListener('webglcontextlost', lost);
       canvas.removeEventListener('pointerdown', pointerDown); canvas.removeEventListener('pointermove', pointerMove); canvas.removeEventListener('pointerup', pointerUp); canvas.removeEventListener('pointercancel', pointerCancel);
       const materials = new Set(), geometriesSet = new Set(), maps = new Set(textures);
@@ -467,6 +452,6 @@ export default function RecWorld({ progress, state, pinRef, onReady, onFailure, 
       geometriesSet.forEach(geometry => geometry.dispose()); materials.forEach(material => material.dispose()); maps.forEach(map => map.dispose());
       environment.dispose(); renderer.dispose();
     };
-  }, [progress, state, pinRef, onReady, onFailure, onPick]);
+  }, [progress, state, onReady, onFailure, onPick]);
   return <canvas ref={canvasRef} className="world-canvas" aria-label="Địa cầu tương tác: kéo để xoay, cuộn để khám phá Việt Nam và REC" />;
 }

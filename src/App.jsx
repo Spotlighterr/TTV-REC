@@ -164,7 +164,6 @@ export default function App() {
   const targetProgress = useRef(0);
   const scrollRange = useRef(1);
   const progressLine = useRef(null);
-  const pinRef = useRef(null);
   const scrollTrackRef = useRef(null);
   const sceneState = useRef({ modal: false, activity: 0 });
   sceneState.current = { ...sceneState.current, modal: !!selection, activity: activityIndex, department: departmentIndex };
@@ -244,7 +243,7 @@ export default function App() {
     <div ref={scrollTrackRef} className="scroll-track" aria-hidden="true" />
     <div className={`experience chapter-${chapter} ${ready ? 'is-ready' : ''}`}>
       <a href="#chapter-content" className="skip-link">Đến nội dung</a>
-      {!failure && <RecWorld progress={progress} state={sceneState} pinRef={pinRef} onReady={onReady} onFailure={onFailure} onPick={onPick} />}
+      {!failure && <RecWorld progress={progress} state={sceneState} onReady={onReady} onFailure={onFailure} onPick={onPick} />}
       {failure && <div className="fallback-planet" aria-hidden="true" />}
       <div className="scene-shade" aria-hidden="true" />
       <div className="scene-colorwash" aria-hidden="true" />
@@ -261,8 +260,6 @@ export default function App() {
           <button className="menu-toggle" aria-label="Mở điều hướng" aria-expanded={menuOpen} aria-controls="mobile-menu" onClick={() => setMenuOpen(value => !value)}>{menuOpen ? '✕' : '☰'}</button>
         </div>
       </header>
-
-      <button ref={pinRef} className="geo-label" tabIndex={chapter <= 1 ? 0 : -1} aria-hidden={chapter > 1} onClick={() => goTo(1)} aria-label="Khám phá Việt Nam và Nhà REC tại Hà Nội"><span className="geo-cross" /><span><small>ĐIỂM ĐẾN CỦA CHÚNG TA</small><strong>HÀ NỘI, VIỆT NAM <span>↗</span></strong><em>21.0285° N · 105.8542° E</em></span></button>
 
       <main id="chapter-content" className="story-stage" tabIndex={-1}>
         {chapters.map((story, panelIndex) => <section key={story.id} className={`story-layer chapter-${panelIndex} ${chapter === panelIndex ? 'active' : ''}`} inert={chapter !== panelIndex} aria-hidden={chapter !== panelIndex}>

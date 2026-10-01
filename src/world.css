@@ -2339,3 +2339,24 @@ button {
   .story-layer.chapter-2 .chapter-description { display:none; }
   .activity-preview-image { height:clamp(130px,25svh,175px); }
 }
+
+/* Desktop activity photo and compact chapter navigation. */
+@media(min-width:761px) {
+  .story-layer.chapter-2 .chapter-content { top:clamp(92px,12vh,145px); width:min(520px,39vw); }
+  .story-layer.chapter-2 h2 { font-size:clamp(42px,4vw,62px); }
+  .story-layer.chapter-2 .chapter-description { margin:12px 0; line-height:1.55; }
+  .activity-preview { width:100%; max-width:none; padding:10px 12px; }
+  .activity-preview-image { display:block; width:100%; height:clamp(160px,23vh,250px); padding:0; border:1px solid #52616b; background:#101a22; overflow:hidden; pointer-events:auto; }
+  .activity-preview-image img { display:block; width:100%; height:100%; object-fit:contain; }
+  .activity-preview>.mono { display:block; margin-top:8px; }
+  .activity-preview h3 { margin-top:4px; font-size:clamp(20px,2vw,27px); }
+  .activity-preview p { margin-top:4px; }
+  .activity-preview .text-link { margin-top:2px; }
+  .activity-controls { margin-top:5px; }
+  .chapter-nav { width:min(420px,38vw); gap:5px; padding:4px 8px 0; }
+  .chapter-nav>button { display:grid; place-items:center; min-height:50px; padding:0; }
+  .chapter-nav>button>span,.chapter-nav>button>strong { display:none; }
+  .chapter-icon { display:block; width:24px; height:24px; color:#a9bcc8; }
+  .chapter-nav>button.active .chapter-icon { color:#ffc194; }
+  .chapter-nav>button>i { bottom:2px; left:20%; right:20%; }
+}
