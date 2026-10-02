@@ -101,6 +101,7 @@ export default function App() {
   const [departmentIndex, setDepartmentIndex] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileLayout, setMobileLayout] = useState(isMobileLayout);
+  const previousChapter = useRef(chapter);
   const progress = useRef(tabParamVal ?? 0);
   const targetProgress = useRef(tabParamVal ?? 0);
   const scrollRange = useRef(1);
@@ -108,6 +109,40 @@ export default function App() {
   const scrollTrackRef = useRef(null);
   const modalOpen = useRef(false);
   modalOpen.current = !!selection;
+
+  useEffect(() => {
+    if (mobileLayout) return;
+    const content = document.querySelector(`#story-${chapter} .chapter-content`);
+    const direction = chapter >= previousChapter.current ? 1 : -1;
+    previousChapter.current = chapter;
+    const animation = content?.animate([
+      { opacity: 0, transform: `translateY(${direction * 24}px) scale(.985)` },
+      { opacity: 1, transform: 'translateY(0) scale(1)' },
+    ], { duration: 550, easing: 'cubic-bezier(.22, 1, .36, 1)' });
+    return () => animation?.cancel();
+  }, [chapter, mobileLayout]);
+
+  useEffect(() => {
+    if (!mobileLayout) return;
+    const animations = new Set();
+    const observer = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        observer.unobserve(entry.target);
+        const content = entry.target.querySelector('.chapter-content');
+        const animation = content?.animate([
+          { opacity: .45, transform: 'translateY(20px)' },
+          { opacity: 1, transform: 'translateY(0)' },
+        ], { duration: 500, easing: 'cubic-bezier(.22, 1, .36, 1)' });
+        if (animation) {
+          animations.add(animation);
+          animation.onfinish = () => animations.delete(animation);
+        }
+      }
+    }, { threshold: 0, rootMargin: '0px 0px -12% 0px' });
+    document.querySelectorAll('.story-stage > .story-layer').forEach(section => observer.observe(section));
+    return () => { observer.disconnect(); animations.forEach(animation => animation.cancel()); };
+  }, [mobileLayout]);
 
   useEffect(() => {
     const media = window.matchMedia(mobileLayoutQuery);

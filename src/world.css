@@ -3699,41 +3699,6 @@ html { scrollbar-color: #1a4b8c #edf4fa; }
   from { opacity: .48; transform: scale(1.035); filter: saturate(.72) blur(5px); }
   to { opacity: 1; transform: scale(1); filter: saturate(1) blur(0); }
 }
-.story-layer.active .hero-text-col > *,
-.story-layer.active .ftu-text-side > *,
-.story-layer.active .activity-centered-container > *,
-.story-layer.active .department-left-side > *,
-.story-layer.active .join-grid-main > *,
-.story-layer.active .join-grid-extra > * {
-  animation: rec-copy-arrive .8s cubic-bezier(.22, 1, .36, 1) both;
-}
-.story-layer.active .hero-text-col > :nth-child(1),
-.story-layer.active .ftu-text-side > :nth-child(1),
-.story-layer.active .activity-centered-container > :nth-child(1),
-.story-layer.active .department-left-side > :nth-child(1),
-.story-layer.active .join-grid-main > :nth-child(1) { animation-delay: .08s; }
-.story-layer.active .hero-text-col > :nth-child(2),
-.story-layer.active .ftu-text-side > :nth-child(2),
-.story-layer.active .activity-centered-container > :nth-child(2),
-.story-layer.active .department-left-side > :nth-child(2),
-.story-layer.active .join-grid-main > :nth-child(2) { animation-delay: .16s; }
-.story-layer.active .hero-text-col > :nth-child(3),
-.story-layer.active .ftu-text-side > :nth-child(3),
-.story-layer.active .activity-centered-container > :nth-child(3),
-.story-layer.active .department-left-side > :nth-child(3),
-.story-layer.active .join-grid-main > :nth-child(3) { animation-delay: .24s; }
-.story-layer.active .hero-text-col > :nth-child(n+4),
-.story-layer.active .ftu-text-side > :nth-child(n+4),
-.story-layer.active .activity-centered-container > :nth-child(n+4),
-.story-layer.active .department-left-side > :nth-child(n+4),
-.story-layer.active .join-grid-main > :nth-child(n+4),
-.story-layer.active .join-grid-extra > * { animation-delay: .32s; }
-.story-layer.active .hero-visual-col,
-.story-layer.active .ftu-image-side,
-.story-layer.active .department-right-side,
-.story-layer.active .join-grid-banner {
-  animation: rec-photo-arrive 1s .18s cubic-bezier(.22, 1, .36, 1) both;
-}
 .activity-preview-image img,
 .department-photo {
   animation: rec-photo-change .65s cubic-bezier(.22, 1, .36, 1) both;
@@ -3970,4 +3935,12 @@ html { scrollbar-color: #1a4b8c #edf4fa; }
   .join-balanced-grid { gap: 14px 28px; }
   .join-grid-extra { padding: 16px; }
   .bnd-sticky-preview { max-width: 370px; }
+}
+
+/* Animate the complete chapter composition instead of individual text. */
+.story-stage .story-layer .chapter-content { animation: none !important; }
+@media (max-width: 760px), (max-width: 960px) and (pointer: coarse) {
+  .bnd-hero-badge { align-items: center; text-align: center; }
+  .bnd-hero-badge .bnd-badge-gen { align-self: center; }
+  .story-stage .story-layer button, .story-stage .story-layer a { pointer-events: auto !important; }
 }
