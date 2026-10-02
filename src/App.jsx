@@ -365,14 +365,6 @@ export default function App() {
                     <span className="caption-hint">Bấm ảnh để xem chi tiết công việc <Arrow /></span>
                   </div>
                 </div>
-                <div className="department-thumb-switch">
-                  {departments.map((d, i) => (
-                    <button key={d.id} className={`thumb-btn ${departmentIndex === i ? 'active' : ''}`} onClick={() => setDepartmentIndex(i)}>
-                      <img {...displayImageProps(departmentImages[i], true)} alt={d.short} loading="lazy" />
-                      <span>{d.short}</span>
-                    </button>
-                  ))}
-                </div>
               </div>
             </div>
           </>}

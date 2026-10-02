@@ -3452,7 +3452,7 @@ html { scrollbar-color: #1a4b8c #edf4fa; }
 .activity-preview-meta .mono,
 .activity-preview-meta .activity-tagline { color: #1a4b8c; }
 .activity-preview-meta h3 { color: #102f59; }
-.department-list { padding: 8px; }
+.department-list { padding: 0; border: 0; background: transparent; box-shadow: none; backdrop-filter: none; }
 .department-list > button,
 .thumb-btn { color: #102f59; background: #fff; border: 1px solid rgba(14, 49, 96, .17); }
 .department-list > button:hover,
@@ -3880,7 +3880,7 @@ html { scrollbar-color: #1a4b8c #edf4fa; }
     gap: 6px !important;
     max-width: none !important;
     margin: 0 0 8px !important;
-    padding: 6px !important;
+    padding: 0 !important;
   }
   .department-list > button {
     min-width: 0;
