@@ -15,11 +15,6 @@ import deptBdnImg from '../assets/images/departments/BDN.jpg';
 import deptBtcImg from '../assets/images/departments/BTC.jpg';
 
 const departmentImages = [deptBcmImg, deptBttImg, deptBdnImg, deptBtcImg];
-import oldRecMark from '../assets/images/wix_asset_1.png';
-import oldCampaignCover from '../assets/images/wix_asset_2.png';
-import oldRecVertical from '../assets/images/wix_asset_3.png';
-import oldGen15Banner from '../assets/images/wix_asset_4.png';
-import oldRecNumbers from '../assets/images/wix_asset_5.png';
 
 const RoadWorld = React.lazy(async () => {
   const [module] = await Promise.all([
@@ -42,39 +37,6 @@ const chapterIconPaths = [
 const ChapterIcon = ({ index }) => <svg className="chapter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{chapterIconPaths[index]}</svg>;
 
 const registrationDeadline = new Date('2026-10-21T00:00:00+07:00').getTime();
-const archivedTitles = {
-  '01-text-effect1': 'Tiêu đề tuyển thành viên Gen 15',
-  '02-legacy-980': 'Ảnh chiến dịch REC Gen 15',
-  '03-cover-2': 'RECERIE · tuyển thành viên Gen 15',
-  '04-untitled-2': 'Ấn phẩm REC Gen 15',
-  '05-gthreal1': 'Thành viên REC · Gen 15',
-  '06-dsc01999': 'Ảnh hoạt động REC Gen 15',
-  '07-456481586_1251764352480859_377922388186230563_n': 'Khoảnh khắc REC Gen 15',
-  '08-nhungconso': 'Những con số ấn tượng của REC',
-  '09-hoatdong': 'Hoạt động REC',
-  '10-thie-t-ke-chu-a-co-te-n_edited': 'Thiết kế tuyển thành viên Gen 15',
-  '11-recerie-ttv': 'RECERIE · website Gen 15',
-  '12-legacy-600': 'Ảnh tư liệu REC Gen 15',
-  '13-va-n-anh': 'Ảnh thành viên REC Gen 15',
-  '14-legacy-600': 'Ảnh tư liệu REC Gen 15',
-  '15-clb_edited': 'CLB Nghiên cứu Thị trường Bất động sản',
-  '16-legacy-311': 'Ảnh tư liệu REC Gen 15',
-  'gen16-recruitment': 'Tuyển thành viên Gen 16',
-  'gen16-open-applications': 'Mở đơn Gen 16',
-  'the-real-contest-final': 'The Real Contest · Khoảnh khắc chung kết',
-  'the-real-contest-evening': 'Đêm chung kết The Real Contest',
-  'the-real-seminar': 'Hội thảo chuyên môn REC',
-  'company-visit': 'Thăm quan doanh nghiệp',
-  'the-maze-2026': 'The Maze 2026',
-  'member-birthday': 'Sinh nhật REC',
-  'rec-birthday-2026': 'Sinh nhật CLB 2026',
-  'secret-santa': 'Secret Santa',
-  'cuu-ke-em-nghe': 'Cựu kể em nghe',
-  'rec-outing': 'Đi chơi xa cùng Nhà REC',
-  'the-maze': 'Ấn phẩm The Maze',
-  'cuu-ke-em-nghe-banner': 'Ấn phẩm Cựu kể em nghe',
-};
-
 function RegistrationCountdown() {
   const [remaining, setRemaining] = useState(() => Math.max(0, registrationDeadline - Date.now()));
   useEffect(() => {
@@ -93,25 +55,6 @@ function RegistrationCountdown() {
     {remaining > 0 && <div className="countdown-units">{units.map(([label, value]) => <div key={label}><strong>{String(value).padStart(2, '0')}</strong><span>{label}</span></div>)}</div>}
   </div>;
 }
-
-const pressFiles = Object.entries({
-  ...import.meta.glob('../assets/press/**/*.{png,jpg,jpeg,webp,avif}', { eager: true, query: '?url', import: 'default' }),
-  ...import.meta.glob('../assets/images/gen16/*.{png,jpg,jpeg,webp,avif}', { eager: true, query: '?url', import: 'default' }),
-})
-  .sort(([a], [b]) => a.localeCompare(b, 'vi', { numeric: true }))
-  .map(([path, src]) => {
-    const filename = path.split('/').pop().replace(/\.[^.]+$/, '');
-    const name = filename.replace(/^\d+[-_ ]*/, '').replace(/[-_]+/g, ' ').trim();
-    return { src, name: archivedTitles[filename] || name || filename, legacy: path.includes('/gen15/'), featured: filename === 'gen16-recruitment', season: path.includes('/gen15/') ? 'GEN 15 · LƯU TRỮ' : 'GEN 16 · ẤN PHẨM MỚI' };
-  });
-const archivedArtwork = [
-  { src: oldCampaignCover, name: 'RECERIE · tuyển thành viên Gen 15', legacy: true, season: 'GEN 15 · LƯU TRỮ' },
-  { src: oldRecMark, name: 'Nhận diện REC Gen 15', legacy: true, season: 'GEN 15 · LƯU TRỮ' },
-  { src: oldRecVertical, name: 'REC · bộ nhận diện dọc', legacy: true, season: 'GEN 15 · LƯU TRỮ' },
-  { src: oldGen15Banner, name: 'Tuyển thành viên Gen 15', legacy: true, season: 'GEN 15 · LƯU TRỮ' },
-  { src: oldRecNumbers, name: 'Những con số ấn tượng của REC', legacy: true, season: 'GEN 15 · LƯU TRỮ' },
-];
-const pressAssets = [...pressFiles, ...archivedArtwork].sort((a, b) => Number(a.legacy) - Number(b.legacy));
 
 function Detail({ selection, onClose }) {
   const dialog = useRef(null);
@@ -149,31 +92,6 @@ function Detail({ selection, onClose }) {
   </dialog>;
 }
 
-function PressDialog({ onClose }) {
-  const dialog = useRef(null);
-  useEffect(() => {
-    const el = dialog.current;
-    el.showModal();
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = previousOverflow; };
-  }, []);
-  const feature = pressAssets.find(item => item.featured) || pressAssets.find(item => item.legacy && /dsc01999/i.test(item.name));
-  return <dialog ref={dialog} className="press-dialog" onCancel={onClose} onClick={event => { if (event.target === dialog.current) onClose(); }} aria-labelledby="press-dialog-title">
-    <div className="press-dialog-shell">
-      <header className="press-masthead" style={feature ? { '--press-image': `url("${feature.src}")` } : undefined}>
-        <button className="close-button" onClick={onClose} aria-label="Đóng ấn phẩm">✕</button>
-        <div><p>REC · TỪ MÙA TRƯỚC ĐẾN GEN 16</p><h2 id="press-dialog-title">Những dấu ấn<br /><em>của Nhà REC.</em></h2><span>Ảnh, chiến dịch và hoạt động của tụi mình — được lưu lại để em xem.</span></div>
-      </header>
-      <section className="press-archive" aria-label="Thư viện ấn phẩm và hình ảnh REC">
-        <div className="press-archive-heading"><div><span>THƯ VIỆN HÌNH ẢNH</span><h3>REC qua những mùa.</h3></div><span>{String(pressAssets.length).padStart(2, '0')} TƯ LIỆU</span></div>
-        <div className="press-grid">{pressAssets.map((item, index) => <a className={`press-card ${item.legacy ? 'archive-card' : ''}`} href={item.src} target="_blank" rel="noreferrer" key={`${item.src}-${index}`} aria-label={`Mở ảnh: ${item.name}`}><img {...displayImageProps(item.src)} alt={item.name} loading="lazy" /><div><span>{item.season}</span><strong>{item.name}</strong><span aria-hidden="true">↗</span></div></a>)}</div>
-          {!pressAssets.some(item => !item.legacy) && <p className="press-upload-note">Ấn phẩm Gen 16 mới sẽ hiện ở đây khi được thêm vào <code>assets/press</code>.</p>}
-      </section>
-    </div>
-  </dialog>;
-}
-
 export default function App() {
   const tabParamVal = (() => {
     try {
@@ -191,7 +109,7 @@ export default function App() {
   const [activityIndex, setActivityIndex] = useState(0);
   const [departmentIndex, setDepartmentIndex] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [pressOpen, setPressOpen] = useState(false);
+  const [mobileLayout, setMobileLayout] = useState(isMobileLayout);
   const progress = useRef(tabParamVal ?? 0);
   const targetProgress = useRef(tabParamVal ?? 0);
   const scrollRange = useRef(1);
@@ -200,8 +118,20 @@ export default function App() {
   const sceneState = useRef({ modal: false, activity: 0 });
   sceneState.current = { ...sceneState.current, modal: !!selection, activity: activityIndex, department: departmentIndex };
 
-  const goTo = useCallback((index) => {
+  useEffect(() => {
+    const media = window.matchMedia(mobileLayoutQuery);
+    const change = () => setMobileLayout(media.matches);
+    media.addEventListener('change', change);
+    return () => media.removeEventListener('change', change);
+  }, []);
+
+  const goTo = useCallback((index, options = {}) => {
     const clamped = Math.max(0, Math.min(4, index));
+    if (isMobileLayout()) {
+      document.getElementById(`story-${clamped}`)?.scrollIntoView({ behavior: options.behavior || 'smooth', block: 'start' });
+      setMenuOpen(false);
+      return;
+    }
     targetProgress.current = clamped;
     progress.current = clamped;
     setChapter(clamped);
@@ -218,7 +148,7 @@ export default function App() {
     const stage = document.querySelector('.story-stage');
     const measure = () => {
       stage.style.setProperty('--story-top', `${Math.ceil(header.getBoundingClientRect().bottom) + 8}px`);
-      stage.style.setProperty('--story-bottom', `${Math.ceil(window.innerHeight - footer.getBoundingClientRect().top) + 8}px`);
+      stage.style.setProperty('--story-bottom', isMobileLayout() ? '0px' : `${Math.ceil(window.innerHeight - footer.getBoundingClientRect().top) + 8}px`);
     };
     const observer = new ResizeObserver(measure);
     observer.observe(header);
@@ -237,12 +167,27 @@ export default function App() {
     let measuredHeight = window.innerHeight;
     let measured = false, resizing = false, resizeFrame;
     const update = () => {
-      if (isMobileLayout() || resizing || window.innerHeight !== measuredHeight || tabParamVal !== null) return;
-      targetProgress.current = Math.max(0, Math.min(4, window.scrollY / scrollRange.current * 4));
+      if (resizing) return;
+      if (isMobileLayout()) {
+        const sections = [...document.querySelectorAll('.story-stage > .story-layer')];
+        const centers = sections.map(section => {
+          const bounds = section.getBoundingClientRect();
+          return bounds.top + window.scrollY + Math.min(bounds.height / 2, window.innerHeight / 2);
+        });
+        const probe = window.scrollY + window.innerHeight * 0.45;
+        let value = 0;
+        for (let index = 0; index < centers.length - 1; index++) {
+          if (probe >= centers[index]) value = index + Math.min(1, (probe - centers[index]) / Math.max(1, centers[index + 1] - centers[index]));
+        }
+        targetProgress.current = value;
+      } else {
+        if (window.innerHeight !== measuredHeight || tabParamVal !== null) return;
+        targetProgress.current = Math.max(0, Math.min(4, window.scrollY / scrollRange.current * 4));
+      }
       schedule();
     };
     const resize = () => {
-      if (isMobileLayout()) { measuredHeight = window.innerHeight; measured = true; return; }
+      if (isMobileLayout()) { measuredHeight = window.innerHeight; measured = true; update(); return; }
       if (!measured) {
         scrollRange.current = Math.max(1, (scrollTrackRef.current?.offsetHeight || window.innerHeight) - window.innerHeight);
         measured = true;
@@ -273,6 +218,7 @@ export default function App() {
     const key = event => {
       if (sceneState.current.modal || ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName)) return;
       if (event.key === 'Escape') setMenuOpen(false);
+      if (isMobileLayout()) return;
       if (['ArrowDown', 'PageDown', 'ArrowUp', 'PageUp'].includes(event.key)) {
         event.preventDefault();
         goTo(Math.round(targetProgress.current) + (['ArrowDown', 'PageDown'].includes(event.key) ? 1 : -1));
@@ -283,9 +229,11 @@ export default function App() {
     window.addEventListener('scroll', update, { passive: true });
     window.addEventListener('resize', resize);
     window.addEventListener('keydown', key);
+    const observer = new ResizeObserver(() => { if (isMobileLayout()) update(); });
+    observer.observe(document.querySelector('.story-stage'));
     resize(); schedule();
-    return () => { cancelAnimationFrame(frame); cancelAnimationFrame(resizeFrame); window.removeEventListener('scroll', update); window.removeEventListener('resize', resize); window.removeEventListener('keydown', key); };
-  }, [goTo]);
+    return () => { observer.disconnect(); cancelAnimationFrame(frame); cancelAnimationFrame(resizeFrame); window.removeEventListener('scroll', update); window.removeEventListener('resize', resize); window.removeEventListener('keydown', key); };
+  }, [goTo, mobileLayout]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -293,6 +241,7 @@ export default function App() {
     if (tabParam !== null) {
       const idx = parseInt(tabParam, 10);
       if (!isNaN(idx) && idx >= 0 && idx <= 4) {
+        if (isMobileLayout()) { goTo(idx, { behavior: 'instant' }); return; }
         setChapter(idx);
         targetProgress.current = idx;
         progress.current = idx;
@@ -303,7 +252,7 @@ export default function App() {
     const aliases = { about: 1, hero: 0, apply: 4, timeline: 4, announcement: 4 };
     const initial = chapters.findIndex(item => item.id === hash);
     const index = initial >= 0 ? initial : aliases[hash];
-    if (index != null) goTo(index);
+    if (index != null) goTo(index, { behavior: 'instant' });
   }, [goTo]);
   useEffect(() => { history.replaceState(null, '', `#${chapters[chapter].id}`); }, [chapter]);
   const activeActivity = activities[activityIndex];
@@ -326,15 +275,14 @@ export default function App() {
         </button>
         <div className="header-coordinate"><span className="status-dot" /> HÀ NỘI · FTU <span className="coordinate-value">REC GEN 16 · ROAD</span></div>
         <div className="header-actions">
-          <button className="press-nav" aria-label="Mở thư viện ấn phẩm REC" onClick={() => setPressOpen(true)}>ẤN PHẨM <Arrow /></button>
           <a className="join-nav bnd-sign-button" href={recruitmentUrl} target="_blank" rel="noreferrer">ĐIỀN ĐƠN NGAY <Arrow /></a>
           <button className="menu-toggle" aria-label="Mở điều hướng" aria-expanded={menuOpen} aria-controls="mobile-menu" onClick={() => setMenuOpen(value => !value)}>{menuOpen ? '✕' : '☰'}</button>
         </div>
       </header>
 
       <main id="chapter-content" className="story-stage" tabIndex={-1}>
-        {chapters.map((story, panelIndex) => <section key={story.id} className={`story-layer chapter-${panelIndex} ${chapter === panelIndex ? 'active' : ''}`} inert={chapter !== panelIndex} aria-hidden={chapter !== panelIndex}>
-        {chapter === panelIndex && <div className="chapter-content"><div className="chapter-copy">
+        {chapters.map((story, panelIndex) => <section id={`story-${panelIndex}`} key={story.id} className={`story-layer chapter-${panelIndex} ${chapter === panelIndex ? 'active' : ''}`} inert={!mobileLayout && chapter !== panelIndex} aria-hidden={!mobileLayout && chapter !== panelIndex} aria-label={story.name}>
+        {(mobileLayout || chapter === panelIndex) && <div className="chapter-content"><div className="chapter-copy">
           {panelIndex === 0 && <>
             <div className="hero-bnd-layout">
               <div className="hero-text-col">
@@ -376,7 +324,7 @@ export default function App() {
               </div>
               <div className="ftu-image-side">
                 <div className="ftu-photo-frame">
-                  <img src={ftuCampusImage} alt="Trường Đại học Ngoại Thương Hà Nội" className="ftu-photo" />
+                  <img src={ftuCampusImage} alt="Trường Đại học Ngoại Thương Hà Nội" className="ftu-photo" loading="lazy" decoding="async" />
                   <div className="ftu-photo-badge">TRƯỜNG ĐẠI HỌC NGOẠI THƯƠNG · 91 CHÙA LÁNG</div>
                 </div>
               </div>
@@ -388,7 +336,7 @@ export default function App() {
               <h2>Chuyện tụi mình <em>đã cùng làm.</em></h2>
               <p className="chapter-description">Từ những buổi học, sự kiện đến chuyến đi xa — mỗi dịp lại có thêm chuyện vui để nhớ.</p>
               <div className="activity-big-card">
-                <button className="activity-preview-image" onClick={() => setSelection({ type: 'activity', index: activityIndex })} aria-label={`Xem ảnh và câu chuyện: ${activeActivity.name}`}><img key={activeActivity.id} {...displayImageProps(activeActivity.image)} alt={activeActivity.name} /></button>
+                <button className="activity-preview-image" onClick={() => setSelection({ type: 'activity', index: activityIndex })} aria-label={`Xem ảnh và câu chuyện: ${activeActivity.name}`}><img key={activeActivity.id} {...displayImageProps(activeActivity.image)} alt={activeActivity.name} loading="lazy" /></button>
                 <div className="activity-preview-meta">
                   <span className="mono">{String(activityIndex + 1).padStart(2, '0')} / {String(activities.length).padStart(2, '0')}</span>
                   <h3>{activeActivity.name}</h3><p className="activity-tagline">{activeActivity.tag}</p>
@@ -410,7 +358,7 @@ export default function App() {
               </div>
               <div className="department-right-side">
                 <div className="department-photo-card" onClick={() => setSelection({ type: 'department', index: departmentIndex })}>
-                  <img key={departments[departmentIndex].id} {...displayImageProps(departmentImages[departmentIndex])} alt={`Ban ${departments[departmentIndex].short}`} className="department-photo" />
+                  <img key={departments[departmentIndex].id} {...displayImageProps(departmentImages[departmentIndex])} alt={`Ban ${departments[departmentIndex].short}`} className="department-photo" loading="lazy" />
                   <div className="department-photo-caption">
                     <span className="caption-label">BAN {departments[departmentIndex].short.toUpperCase()}</span>
                     <strong className="caption-tagline">{departments[departmentIndex].tag}</strong>
@@ -432,7 +380,7 @@ export default function App() {
             <div className="join-balanced-grid">
               <div className="join-grid-banner">
                 <div className="join-hero-banner-wrapper">
-                  <img {...displayImageProps(gen16FormBanner)} alt="Tuyển thành viên Gen 16" className="join-form-cover" />
+                  <img {...displayImageProps(gen16FormBanner)} alt="Tuyển thành viên Gen 16" className="join-form-cover" loading="lazy" />
                 </div>
               </div>
               <div className="join-grid-main">
@@ -488,7 +436,6 @@ export default function App() {
       </div>
       <div className="footer-bottom"><span>© 2026 REC FTU · GEN 16</span><span>Design by Spolighterr</span></div>
     </footer>
-    {pressOpen && <PressDialog onClose={() => setPressOpen(false)} />}
     {selection && <Detail selection={selection} onClose={() => setSelection(null)} />}
   </>;
 }
