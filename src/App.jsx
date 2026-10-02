@@ -16,13 +16,6 @@ import deptBtcImg from '../assets/images/departments/BTC.jpg';
 
 const departmentImages = [deptBcmImg, deptBttImg, deptBdnImg, deptBtcImg];
 
-const RoadWorld = React.lazy(async () => {
-  const [module] = await Promise.all([
-    import('./road-world.jsx'),
-    document.fonts.load('700 16px Montserrat', 'REC ĐỒNG ĐỘI').catch(() => []),
-  ]);
-  return module;
-});
 const mobileLayoutQuery = '(max-width: 760px), (max-width: 960px) and (pointer: coarse)';
 const isMobileLayout = () => window.matchMedia(mobileLayoutQuery).matches;
 const Arrow = () => <span aria-hidden="true">↗</span>;
@@ -104,8 +97,6 @@ export default function App() {
 
   const [chapter, setChapter] = useState(tabParamVal ?? 0);
   const [selection, setSelection] = useState(null);
-  const [ready, setReady] = useState(true);
-  const [failure, setFailure] = useState(false);
   const [activityIndex, setActivityIndex] = useState(0);
   const [departmentIndex, setDepartmentIndex] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -115,8 +106,8 @@ export default function App() {
   const scrollRange = useRef(1);
   const progressLine = useRef(null);
   const scrollTrackRef = useRef(null);
-  const sceneState = useRef({ modal: false, activity: 0 });
-  sceneState.current = { ...sceneState.current, modal: !!selection, activity: activityIndex, department: departmentIndex };
+  const modalOpen = useRef(false);
+  modalOpen.current = !!selection;
 
   useEffect(() => {
     const media = window.matchMedia(mobileLayoutQuery);
@@ -137,11 +128,8 @@ export default function App() {
     setChapter(clamped);
     if (!isMobileLayout()) window.scrollTo({ top: scrollRange.current * clamped / 4, behavior: 'instant' });
     if (progressLine.current) progressLine.current.style.transform = `scaleX(${clamped / 4})`;
-    sceneState.current.focusRequest = (sceneState.current.focusRequest || 0) + 1;
     setMenuOpen(false);
   }, []);
-  const onReady = useCallback(() => setReady(true), []);
-  const onFailure = useCallback(() => { setFailure(true); setReady(true); }, []);
   useEffect(() => {
     const header = document.querySelector('.site-header');
     const footer = document.querySelector('.journey-footer');
@@ -163,7 +151,7 @@ export default function App() {
     };
   }, []);
   useEffect(() => {
-    // The DOM and WebGL camera consume the same eased clock. No second scroll tween.
+    // Ease chapter transitions and the reading progress together.
     let measuredHeight = window.innerHeight;
     let measured = false, resizing = false, resizeFrame;
     const update = () => {
@@ -216,7 +204,7 @@ export default function App() {
       if (Math.abs(distance) >= 0.0001) schedule();
     };
     const key = event => {
-      if (sceneState.current.modal || ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName)) return;
+      if (modalOpen.current || ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName)) return;
       if (event.key === 'Escape') setMenuOpen(false);
       if (isMobileLayout()) return;
       if (['ArrowDown', 'PageDown', 'ArrowUp', 'PageUp'].includes(event.key)) {
@@ -258,15 +246,12 @@ export default function App() {
   const activeActivity = activities[activityIndex];
   return <>
     <div ref={scrollTrackRef} className="scroll-track" aria-hidden="true" />
-    <div className={`experience chapter-${chapter} ${ready ? 'is-ready' : ''}`}>
+    <div className={`experience chapter-${chapter} is-ready`}>
       <a href="#chapter-content" className="skip-link">Đến nội dung</a>
       <div className="bnd-stage-backdrop" aria-hidden="true">
         <div className="bnd-sky-official-layer" />
         <div className="bnd-sky-overlay-gradient" />
       </div>
-      {!failure && <React.Suspense fallback={null}><RoadWorld progress={progress} onReady={onReady} onFailure={onFailure} /></React.Suspense>}
-      <div className="scene-shade" aria-hidden="true" />
-      <div className="scene-colorwash" aria-hidden="true" />
       <div className="reading-progress" aria-hidden="true"><div ref={progressLine} /></div>
       <header className="site-header">
         <button className="brand" onClick={() => goTo(0)} aria-label="CLB Nghiên cứu Thị trường Bất động sản, Trường Đại học Ngoại Thương — về đầu hành trình">
@@ -398,7 +383,7 @@ export default function App() {
       </main>
 
       <footer className="journey-footer">
-        <div className="journey-intro"><span className="scroll-mouse" aria-hidden="true" /><span>CUỘN ĐỂ<br /><strong>ĐỔI GÓC NHÌN</strong></span></div>
+        <div className="journey-intro"><span className="scroll-mouse" aria-hidden="true" /><span>CUỘN ĐỂ<br /><strong>XEM CÁC CHẶNG</strong></span></div>
         <nav className="chapter-nav" aria-label="Các chặng hành trình">{chapters.map((item, i) => <button key={item.id} className={i === chapter ? 'active' : ''} aria-label={item.name} title={item.name} aria-current={i === chapter ? 'step' : undefined} onClick={() => goTo(i)}><span>0{i + 1}</span><strong>{item.name}</strong><ChapterIcon index={i} /><i /></button>)}</nav>
         <span className="journey-count"><strong>0{chapter + 1}</strong><span> / 05</span></span>
       </footer>
