@@ -8,3 +8,8 @@ scratch/
 tmp/
 
 .agents/
+
+# Test artifacts & raw design archives
+*.png
+*.py
+raw-materials/

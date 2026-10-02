@@ -1,8 +1,9 @@
 import departmentData from './data/departments.json';
-import activitiesData from '../activities_data.json';
+import activitiesData from './data/activities_data.json';
 import gen16Recruitment from '../assets/images/gen16/gen16-recruitment.png';
 import gen16OpenApplications from '../assets/images/gen16/gen16-open-applications.png';
 import theRealContestImage from '../assets/images/gen16/the-real-contest-final.jpg';
+export const contestImage = theRealContestImage;
 import theRealSeminarImage from '../assets/images/gen16/the-real-seminar.jpg';
 import companyVisitImage from '../assets/images/gen16/company-visit.jpg';
 import theMazeImage from '../assets/images/gen16/the-maze-2026.jpg';
@@ -15,11 +16,12 @@ import gen16Cover from '../assets/images/gen16-bnd/bnd-ttv-cover.png';
 import gen16FormBanner from '../assets/images/gen16-bnd/form-banner.png';
 
 export const chapters = [
-  { id: 'orbit', name: 'Khởi hành', tag: '01 / REC FTU — ROAD · VỀ NHÀ' },
-  { id: 'vietnam', name: 'Ngoại Thương', tag: '02 / ĐIỂM HẸN: HÀ NỘI, NGOẠI THƯƠNG' },
-  { id: 'activities', name: 'Dấu ấn', tag: '03 / NHỮNG ĐIỀU CHÚNG MÌNH ĐÃ LÀM' },
-  { id: 'departments', name: 'Đồng đội', tag: '04 / CHỌN VAI TRÒ CỦA EM' },
-  { id: 'join', name: 'Gia nhập', tag: '05 / VÌ REC LÀ NHÀ' },
+  { id: 'orbit', name: 'Khởi hành', short: 'Khởi hành', tag: '01 / REC FTU — ROAD · VỀ NHÀ' },
+  { id: 'vietnam', name: 'Ngoại Thương', short: 'FTU', tag: '02 / ĐIỂM HẸN: HÀ NỘI, NGOẠI THƯƠNG' },
+  { id: 'activities', name: 'Dấu ấn', short: 'Dấu ấn', tag: '03 / NHỮNG ĐIỀU CHÚNG MÌNH ĐÃ LÀM' },
+  { id: 'the-real-contest', name: 'The Real Contest', short: 'TRC', tag: '04 / ĐẤU TRƯỜNG BẤT ĐỘNG SẢN · REC FTU' },
+  { id: 'departments', name: 'Đồng đội', short: '4 Ban', tag: '05 / CHỌN VAI TRÒ CỦA EM' },
+  { id: 'join', name: 'Gia nhập', short: 'Gia nhập', tag: '06 / VÌ REC LÀ NHÀ' },
 ];
 export const campaignImages = [
   { image: gen16Cover, name: 'ROAD · Tuyển thành viên Gen 16', tag: 'BỘ NHẬN DIỆN GEN 16' },
@@ -28,7 +30,6 @@ export const campaignImages = [
   { image: gen16OpenApplications, name: 'Mở đơn Gen 16', tag: 'VÒNG 1 · MỞ ĐƠN' },
 ];
 const activityImages = {
-  'the-real-contest': theRealContestImage,
   'the-maze': theMazeImage,
   'real-seminar': theRealSeminarImage,
   'company-visit': companyVisitImage,
@@ -38,7 +39,7 @@ const activityImages = {
   'di-choi-xa': recOutingImage,
 };
 export const activities = [
-  ...activitiesData.ngoai_bo.filter(item => ['the-real-contest', 'the-maze'].includes(item.id)),
+  ...activitiesData.ngoai_bo.filter(item => item.id === 'the-maze'),
   { id: 'real-seminar', name: 'Hội thảo chuyên môn', tag: 'Học từ những trải nghiệm thật', desc: 'Cùng Nhà REC gặp gỡ người trong ngành, trò chuyện ở các buổi hội thảo và tìm hiểu những dự án bất động sản ngoài đời thật.' },
   { id: 'company-visit', name: 'Tham quan doanh nghiệp', tag: 'Nhìn ngành nghề từ thực tế', desc: 'Tụi mình ghé thăm doanh nghiệp, tìm hiểu cách mọi người làm việc và đặt thêm câu hỏi về những hướng đi trong ngành bất động sản.' },
   { id: 'rec-birthday-2026', name: 'Sinh nhật CLB 2026', tag: 'Cả nhà REC cùng gặp nhau', desc: 'Một dịp để các thế hệ thành viên REC gặp lại, cùng nhìn lại những chặng đường đã qua và lưu thêm kỷ niệm mới.' },

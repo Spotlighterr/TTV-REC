@@ -31,7 +31,7 @@ const sources = new Map([
   [image6, ['company-visit', 2000, 1125]],
   [image7, ['cuu-ke-em-nghe-banner', 2480, 2480]],
   [image8, ['cuu-ke-em-nghe', 2048, 1536]],
-  [image9, ['gen16-open-applications', 900, 900]],
+  [image9, ['gen16-open-applications', 1453, 1453]],
   [image10, ['gen16-recruitment', 1453, 1453]],
   [image11, ['member-birthday', 1471, 1462]],
   [image12, ['rec-birthday-2026', 2048, 1366]],
