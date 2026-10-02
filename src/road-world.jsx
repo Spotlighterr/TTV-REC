@@ -7,20 +7,21 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { SSAOPass } from 'three/addons/postprocessing/SSAOPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { addRoadNeighborhood } from './road-neighborhood';
+import { addRoadNeighborhood, batchStaticMeshes } from './road-neighborhood';
 
 const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
 const MODEL_ROOT = '/models/road-world/polyhaven';
 
-function asphaltTexture() {
+function asphaltTexture(lightweight = false) {
   const canvas = document.createElement('canvas');
-  canvas.width = canvas.height = 512;
+  canvas.width = canvas.height = lightweight ? 256 : 512;
   const ctx = canvas.getContext('2d');
+  ctx.scale(canvas.width / 512, canvas.height / 512);
   ctx.fillStyle = '#62686c';
   ctx.fillRect(0, 0, 512, 512);
   let seed = 8821;
   const random = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
-  for (let i = 0; i < 26000; i++) {
+  for (let i = 0; i < (lightweight ? 4000 : 26000); i++) {
     const value = Math.round(92 + random() * 105);
     ctx.fillStyle = `rgba(${value},${value},${value},${0.025 + random() * 0.09})`;
     const size = 0.5 + random() * 2.2;
@@ -40,10 +41,11 @@ function asphaltTexture() {
   return { color: texture, roughness, bump };
 }
 
-function vergeTexture() {
+function vergeTexture(lightweight = false) {
   const canvas = document.createElement('canvas');
-  canvas.width = canvas.height = 512;
+  canvas.width = canvas.height = lightweight ? 256 : 512;
   const ctx = canvas.getContext('2d');
+  ctx.scale(canvas.width / 512, canvas.height / 512);
   ctx.fillStyle = '#526a50';
   ctx.fillRect(0, 0, 512, 512);
   let seed = 17413;
@@ -59,7 +61,7 @@ function vergeTexture() {
     ctx.fill();
   }
   const flecks = ['#81906a', '#a4a57b', '#4e644f', '#887e62', '#c1b393'];
-  for (let i = 0; i < 35000; i++) {
+  for (let i = 0; i < (lightweight ? 6000 : 35000); i++) {
     ctx.globalAlpha = 0.16 + random() * 0.48;
     ctx.fillStyle = flecks[Math.floor(random() * flecks.length)];
     const x = random() * 512;
@@ -88,7 +90,7 @@ function milepostTexture(number) {
   ctx.fillRect(0, 165, 256, 27);
   ctx.fillStyle = '#fff';
   ctx.textAlign = 'center';
-  ctx.font = '700 104px "Bebas Neue", Arial, sans-serif';
+  ctx.font = '700 92px Montserrat, sans-serif';
   ctx.fillText(String(number).padStart(2, '0'), 128, 131);
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
@@ -116,19 +118,20 @@ export default function RoadWorld({ progress, onReady, onFailure }) {
 
   useEffect(() => {
     const canvas = canvasRef.current;
+    const constrained = window.matchMedia('(max-width: 960px), (pointer: coarse)').matches || navigator.hardwareConcurrency <= 4 || navigator.deviceMemory <= 4;
+    const hasPointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const lowPower = () => constrained;
     let renderer;
     try {
-      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: !constrained, alpha: true, powerPreference: constrained ? 'low-power' : 'high-performance' });
     } catch {
       onFailure();
       return undefined;
     }
 
     let disposed = false;
-    const isMobile = () => window.innerWidth < 760;
-    const lowPower = () => isMobile() || (navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 4) || (navigator.deviceMemory > 0 && navigator.deviceMemory <= 4);
     let adaptiveScale = 1;
-    const pixelRatio = () => Math.min(devicePixelRatio, lowPower() ? 1.05 : 1.5, Math.sqrt((lowPower() ? 720000 : 1500000) / (innerWidth * innerHeight))) * adaptiveScale;
+    const pixelRatio = () => Math.min(devicePixelRatio, lowPower() ? 0.9 : 1.5, Math.sqrt((lowPower() ? 420000 : 1500000) / (innerWidth * innerHeight))) * adaptiveScale;
     renderer.setPixelRatio(pixelRatio());
     renderer.setSize(innerWidth, innerHeight, false);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -136,11 +139,28 @@ export default function RoadWorld({ progress, onReady, onFailure }) {
     renderer.toneMappingExposure = 1.08;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
+    renderer.shadowMap.autoUpdate = false;
+    renderer.shadowMap.needsUpdate = true;
     renderer.setClearColor(0x000000, 0);
 
     const scene = new THREE.Scene();
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
     let environmentMap;
+    if (constrained) {
+      const skyCanvas = document.createElement('canvas');
+      skyCanvas.width = 256; skyCanvas.height = 128;
+      const context = skyCanvas.getContext('2d');
+      const gradient = context.createLinearGradient(0, 0, 0, 128);
+      gradient.addColorStop(0, '#8eb7d5');
+      gradient.addColorStop(0.46, '#f8edda');
+      gradient.addColorStop(1, '#617261');
+      context.fillStyle = gradient;
+      context.fillRect(0, 0, 256, 128);
+      const skyTexture = new THREE.CanvasTexture(skyCanvas);
+      skyTexture.colorSpace = THREE.SRGBColorSpace;
+      environmentMap = pmremGenerator.fromEquirectangular(skyTexture).texture;
+      skyTexture.dispose();
+    }
     scene.environment = environmentMap;
     scene.environmentIntensity = 0.76;
     scene.fog = new THREE.Fog(0xc3d7e4, 38, 88);
@@ -188,7 +208,7 @@ export default function RoadWorld({ progress, onReady, onFailure }) {
       onLoad(result.scene);
     });
     const environmentLoader = new HDRLoader();
-    environmentLoader.load(`${MODEL_ROOT}/flower_road_2k.hdr`, texture => {
+    if (!constrained) environmentLoader.load(`${MODEL_ROOT}/flower_road_2k.hdr`, texture => {
       hdrTexture = texture;
       if (disposed) { texture.dispose(); return; }
       texture.mapping = THREE.EquirectangularReflectionMapping;
@@ -237,7 +257,7 @@ export default function RoadWorld({ progress, onReady, onFailure }) {
     roadGeometry.setAttribute('uv', new THREE.Float32BufferAttribute(roadUvs, 2));
     roadGeometry.setIndex(roadIndices);
     roadGeometry.computeVertexNormals();
-    const asphaltGrain = asphaltTexture();
+    const asphaltGrain = asphaltTexture(constrained);
     const asphalt = new THREE.Mesh(roadGeometry, new THREE.MeshStandardMaterial({ color: 0xb8c0c6, map: asphaltGrain.color, roughnessMap: asphaltGrain.roughness, bumpMap: asphaltGrain.bump, bumpScale: 0.035, metalness: 0.04, roughness: 0.94, side: THREE.DoubleSide }));
     asphalt.receiveShadow = true;
     scene.add(asphalt);
@@ -249,7 +269,7 @@ export default function RoadWorld({ progress, onReady, onFailure }) {
       return point.addScaledVector(lateral, side * offset);
     };
     addRoadNeighborhood(scene, roadPath, roadHalfWidth, roadsideAt, lowPower());
-    const vergeGrain = vergeTexture();
+    const vergeGrain = vergeTexture(constrained);
     const vergeMaterial = new THREE.MeshStandardMaterial({
       map: vergeGrain.color,
       bumpMap: vergeGrain.bump,
@@ -358,7 +378,6 @@ export default function RoadWorld({ progress, onReady, onFailure }) {
     });
 
     const laneMaterial = new THREE.MeshStandardMaterial({ color: 0xf3e9c8, roughness: 0.82 });
-    const laneMarks = [];
     for (let i = 0; i < 15; i++) {
       const t = 0.025 + i * 0.064;
       const point = roadPath.getPointAt(t);
@@ -366,9 +385,7 @@ export default function RoadWorld({ progress, onReady, onFailure }) {
       const mark = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.012, 0.82), laneMaterial);
       mark.position.copy(point).add(V(0, 0.025, 0));
       mark.quaternion.setFromUnitVectors(V(0, 0, -1), tangent);
-      mark.userData.routeT = t;
       scene.add(mark);
-      laneMarks.push(mark);
     }
 
     const flowerBeds = [];
@@ -389,11 +406,12 @@ export default function RoadWorld({ progress, onReady, onFailure }) {
 
     const cursorGlowMaterial = new THREE.SpriteMaterial({ map: cursorGlowTexture(), color: 0x8dbfff, transparent: true, opacity: 0.24, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false });
     const cursorGlow = new THREE.Sprite(cursorGlowMaterial);
+    cursorGlow.visible = hasPointer;
     cursorGlow.scale.set(1.9, 1.9, 1);
     cursorGlow.renderOrder = 20;
     scene.add(cursorGlow);
     const cursorLight = new THREE.PointLight(0x79b8ff, 1.1, 5.2, 2);
-    scene.add(cursorLight);
+    if (hasPointer) scene.add(cursorLight);
     const raycaster = new THREE.Raycaster();
     const cursorPlane = new THREE.Plane();
     const cursorPoint = V();
@@ -401,8 +419,11 @@ export default function RoadWorld({ progress, onReady, onFailure }) {
 
     const concrete = new THREE.MeshStandardMaterial({ color: 0x8c928d, roughness: 0.92, metalness: 0.02 });
     const paintedMetal = new THREE.MeshStandardMaterial({ color: 0xe8ecea, roughness: 0.58, metalness: 0.28 });
-    const blueReflector = new THREE.MeshPhysicalMaterial({ color: 0x1a4b8c, roughness: 0.27, metalness: 0.38, clearcoat: 0.65, clearcoatRoughness: 0.22 });
-    const redReflector = new THREE.MeshPhysicalMaterial({ color: 0xd32f2f, roughness: 0.29, metalness: 0.32, clearcoat: 0.6, clearcoatRoughness: 0.25 });
+    const ReflectorMaterial = constrained ? THREE.MeshStandardMaterial : THREE.MeshPhysicalMaterial;
+    const blueReflector = new ReflectorMaterial({ color: 0x1a4b8c, roughness: 0.27, metalness: 0.38, ...(!constrained && { clearcoat: 0.65, clearcoatRoughness: 0.22 }) });
+    const redReflector = new ReflectorMaterial({ color: 0xd32f2f, roughness: 0.29, metalness: 0.32, ...(!constrained && { clearcoat: 0.6, clearcoatRoughness: 0.25 }) });
+    const roadsideMarkers = new THREE.Group();
+    scene.add(roadsideMarkers);
     const markerTs = [0.025, 0.11, 0.2, 0.29, 0.38, 0.47, 0.56, 0.65, 0.74, 0.83, 0.92];
     const majorMarkers = new Map([[0, 1], [3, 2], [5, 3], [8, 4], [10, 5]]);
     markerTs.forEach((t, index) => {
@@ -410,7 +431,7 @@ export default function RoadWorld({ progress, onReady, onFailure }) {
         const marker = new THREE.Group();
         marker.position.copy(roadsideAt(t, side, roadHalfWidth(t) + 0.3)).add(V(0, vergeHeight(0.3), 0));
         marker.rotation.y = Math.atan2(roadPath.getTangentAt(t).x, roadPath.getTangentAt(t).z);
-        scene.add(marker);
+        roadsideMarkers.add(marker);
         const footing = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 0.11, 14), concrete);
         footing.position.y = 0.035;
         footing.castShadow = footing.receiveShadow = true;
@@ -440,12 +461,13 @@ export default function RoadWorld({ progress, onReady, onFailure }) {
         }
       }
     });
+    batchStaticMeshes(roadsideMarkers);
 
     const populateFlowerBeds = (template, species) => {
       flowerBeds.forEach((bed, index) => {
         if (bed.species !== species || bed.plants) return;
         const plants = [];
-        for (let j = 0; j < 2; j++) {
+        for (let j = 0; j < (constrained ? 1 : 2); j++) {
           const plant = template.clone(true);
           const bounds = new THREE.Box3().setFromObject(plant);
           const dimensions = bounds.getSize(V());
@@ -456,7 +478,7 @@ export default function RoadWorld({ progress, onReady, onFailure }) {
           plant.position.y = -bounds.min.y * scale;
           plant.traverse(object => {
             if (object.isMesh) {
-              object.castShadow = true;
+              object.castShadow = !constrained;
               object.receiveShadow = true;
               const materials = Array.isArray(object.material) ? object.material : [object.material];
               materials.forEach(material => { material.envMapIntensity = 0.72; });
@@ -483,14 +505,25 @@ export default function RoadWorld({ progress, onReady, onFailure }) {
       targetPointer.x = (event.clientX / innerWidth - 0.5) * 2;
       targetPointer.y = (event.clientY / innerHeight - 0.5) * 2;
     };
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    if (hasPointer) window.addEventListener('pointermove', onPointerMove, { passive: true });
     let last = performance.now();
     let sampledFrames = 0;
     let sampledTime = 0;
+    let lastQualityChange = 0;
+    let lastShadowUpdate = 0;
+    let lastShadowProgress = -1;
+    const frameInterval = constrained ? 1000 / 30 : 0;
+    const roadTangent = V();
+    const fogColor = new THREE.Color(0xc3d7e4);
+    const cameraForward = V();
+    const cursorPlaneOrigin = V();
     let frameId;
     const render = now => {
       if (disposed) return;
-      const dt = Math.min((now - last) / 1000, 0.08);
+      frameId = requestAnimationFrame(render);
+      if (now - last < frameInterval - 1) return;
+      const elapsed = (now - last) / 1000;
+      const dt = Math.min(elapsed, 0.08);
       last = now;
       const targetProgress = THREE.MathUtils.clamp(progress.current, 0, 4);
       currentProgress += (targetProgress - currentProgress) * (1 - Math.exp(-dt * 4.8));
@@ -503,7 +536,7 @@ export default function RoadWorld({ progress, onReady, onFailure }) {
       cameraTarget.x += pointer.x * 0.45;
       cameraTarget.y -= pointer.y * 0.18;
       camera.lookAt(cameraTarget);
-      const roadTangent = roadPath.getTangentAt(t).normalize();
+      roadPath.getTangentAt(t, roadTangent).normalize();
       camera.rotation.z += -roadTangent.x * 0.018 + Math.sin(now * 0.00028) * 0.002;
       camera.fov = 48 + Math.sin(now * 0.00019) * 0.12;
       camera.updateProjectionMatrix();
@@ -514,41 +547,42 @@ export default function RoadWorld({ progress, onReady, onFailure }) {
       sun.color.copy(currentSunColor);
       sun.intensity = 2.25 + t * 0.42;
       sun.position.set(-5 + t * 5.5, 11 + t * 5, 8 - t * 3.5);
-      scene.fog.color.copy(currentSunColor).lerp(new THREE.Color(0xc3d7e4), 0.74);
-      const cameraForward = camera.getWorldDirection(V());
-      cursorPlane.setFromNormalAndCoplanarPoint(cameraForward, camera.position.clone().addScaledVector(cameraForward, 7.2));
-      raycaster.setFromCamera(pointer, camera);
-      raycaster.ray.intersectPlane(cursorPlane, cursorTarget);
-      cursorPoint.lerp(cursorTarget, 1 - Math.exp(-dt * 8));
-      cursorGlow.position.copy(cursorPoint);
-      cursorLight.position.copy(cursorPoint);
+      scene.fog.color.copy(currentSunColor).lerp(fogColor, 0.74);
+      if (hasPointer) {
+        camera.getWorldDirection(cameraForward);
+        cursorPlaneOrigin.copy(camera.position).addScaledVector(cameraForward, 7.2);
+        cursorPlane.setFromNormalAndCoplanarPoint(cameraForward, cursorPlaneOrigin);
+        raycaster.setFromCamera(pointer, camera);
+        raycaster.ray.intersectPlane(cursorPlane, cursorTarget);
+        cursorPoint.lerp(cursorTarget, 1 - Math.exp(-dt * 8));
+        cursorGlow.position.copy(cursorPoint);
+        cursorLight.position.copy(cursorPoint);
+      }
       if (grassShader) grassShader.uniforms.roadTime.value = now * 0.001;
 
       flowerBeds.forEach((bed, i) => {
+        bed.group.visible = !constrained || bed.group.position.distanceToSquared(camera.position) < 625;
         bed.plants?.forEach((plant, j) => { plant.rotation.z = Math.sin(now * 0.00062 + i * 0.9 + j) * 0.025; });
       });
-      laneMarks.forEach(mark => {
-        const routeT = mark.userData.routeT;
-        const point = roadPath.getPointAt(routeT);
-        const tangent = roadPath.getTangentAt(routeT).normalize();
-        mark.position.set(point.x, point.y + 0.025, point.z);
-        mark.quaternion.setFromUnitVectors(V(0, 0, -1), tangent);
-      });
+      if (constrained ? Math.abs(t - lastShadowProgress) > 0.004 : now - lastShadowUpdate > 100) {
+        renderer.shadowMap.needsUpdate = true;
+        lastShadowProgress = t;
+        lastShadowUpdate = now;
+      }
       if (composer) composer.render(dt);
       else renderer.render(scene, camera);
       if (!document.hidden && dt > 0.001) {
         sampledFrames++;
-        sampledTime += dt;
-        if (sampledFrames >= 75) {
+        sampledTime += elapsed;
+        if (sampledFrames >= 90) {
           const averageFrame = sampledTime / sampledFrames;
-          const nextScale = averageFrame > 0.038 ? Math.max(0.7, adaptiveScale - 0.1)
-            : averageFrame < 0.022 ? Math.min(1, adaptiveScale + 0.05) : adaptiveScale;
-          if (nextScale !== adaptiveScale) { adaptiveScale = nextScale; resize(); }
+          const nextScale = averageFrame > (constrained ? 0.05 : 0.035) ? Math.max(0.55, adaptiveScale - 0.1)
+            : averageFrame < (constrained ? 0.037 : 0.02) && now - lastQualityChange > 12000 ? Math.min(1, adaptiveScale + 0.05) : adaptiveScale;
+          if (nextScale !== adaptiveScale) { adaptiveScale = nextScale; lastQualityChange = now; resize(); }
           sampledFrames = 0;
           sampledTime = 0;
         }
       }
-      frameId = requestAnimationFrame(render);
     };
     const cameraTarget = V();
     const resize = () => {
@@ -561,14 +595,17 @@ export default function RoadWorld({ progress, onReady, onFailure }) {
       camera.aspect = innerWidth / innerHeight;
       camera.updateProjectionMatrix();
     };
-    window.addEventListener('resize', resize);
+    let resizeTimer;
+    const queueResize = () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(resize, 160); };
+    window.addEventListener('resize', queueResize);
     onReady();
     frameId = requestAnimationFrame(render);
 
     return () => {
       disposed = true;
       cancelAnimationFrame(frameId);
-      window.removeEventListener('resize', resize);
+      clearTimeout(resizeTimer);
+      window.removeEventListener('resize', queueResize);
       window.removeEventListener('pointermove', onPointerMove);
       composer?.dispose();
       pmremGenerator.dispose();

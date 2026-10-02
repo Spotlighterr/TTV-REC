@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { displayImageProps } from './display-images';
 import { chapters, activities, departments, timeline, recruitmentUrl, recruitmentIntro, recruitmentRounds, campaignImages } from './content';
 import recLogoUrl from '../recftu_logo.jpg';
 import gen16Cover from '../assets/images/gen16-bnd/bnd-ttv-cover.png';
@@ -20,7 +21,15 @@ import oldRecVertical from '../assets/images/wix_asset_3.png';
 import oldGen15Banner from '../assets/images/wix_asset_4.png';
 import oldRecNumbers from '../assets/images/wix_asset_5.png';
 
-const RoadWorld = React.lazy(() => import('./road-world.jsx'));
+const RoadWorld = React.lazy(async () => {
+  const [module] = await Promise.all([
+    import('./road-world.jsx'),
+    document.fonts.load('700 16px Montserrat', 'REC ĐỒNG ĐỘI').catch(() => []),
+  ]);
+  return module;
+});
+const mobileLayoutQuery = '(max-width: 760px), (max-width: 960px) and (pointer: coarse)';
+const isMobileLayout = () => window.matchMedia(mobileLayoutQuery).matches;
 const Arrow = () => <span aria-hidden="true">↗</span>;
 
 const chapterIconPaths = [
@@ -120,11 +129,11 @@ function Detail({ selection, onClose }) {
   return <dialog ref={dialog} className={`detail-dialog ${isTimeline ? 'timeline-dialog' : ''}`} onCancel={onClose} onClick={event => { if (event.target === dialog.current) onClose(); }} aria-labelledby="detail-title">
     <div className="detail-shell">
       <button className="close-button" onClick={onClose} aria-label="Đóng chi tiết">✕</button>
-      {!isDept && !isTimeline && !isStory && selection.type !== 'campaign' && <img className="detail-image" src={item.image} alt={item.name} />}
+      {!isDept && !isTimeline && !isStory && selection.type !== 'campaign' && <img className="detail-image" {...displayImageProps(item.image)} alt={item.name} />}
       <div className="detail-body">
         <p className="eyebrow">{isStory ? 'CÂU CHUYỆN GEN 16' : isTimeline ? 'HÀNH TRÌNH ĐẾN NHÀ REC' : isDept ? `MẢNH GHÉP ${item.number} / REC FTU` : selection.type === 'campaign' ? 'TUYỂN THÀNH VIÊN GEN 16' : 'NHẬT KÝ NHÀ REC'}</p>
         <h2 id="detail-title">{isStory ? 'Con đường về Nhà REC.' : isTimeline ? 'Từ lá đơn đến đồng đội.' : isDept ? item.title : item.name}</h2>
-        {isStory ? <div className="story-dialog-copy">{recruitmentIntro.map(paragraph => <p key={paragraph}>{paragraph}</p>)}</div> : selection.type === 'campaign' ? <><img className="detail-image" src={item.image} alt={item.name} /><p className="detail-tag">{item.tag}</p></> : isTimeline ? <>
+        {isStory ? <div className="story-dialog-copy">{recruitmentIntro.map(paragraph => <p key={paragraph}>{paragraph}</p>)}</div> : selection.type === 'campaign' ? <><img className="detail-image" {...displayImageProps(item.image)} alt={item.name} /><p className="detail-tag">{item.tag}</p></> : isTimeline ? <>
           <ol className="recruitment-timeline">{timeline.map(([title, description], i) => <li key={title}><span>0{i + 1}</span><div><h3>{title}</h3><p>{description}</p></div></li>)}</ol>
           <p className="detail-note">Đơn đăng ký mở từ 01/10 đến hết ngày 20/10/2026. Hãy kể cho REC nghe về em nhé!</p>
           <a className="button primary" href={recruitmentUrl} target="_blank" rel="noreferrer">Điền đơn ứng tuyển ngay <Arrow /></a>
@@ -158,7 +167,7 @@ function PressDialog({ onClose }) {
       </header>
       <section className="press-archive" aria-label="Thư viện ấn phẩm và hình ảnh REC">
         <div className="press-archive-heading"><div><span>THƯ VIỆN HÌNH ẢNH</span><h3>REC qua những mùa.</h3></div><span>{String(pressAssets.length).padStart(2, '0')} TƯ LIỆU</span></div>
-        <div className="press-grid">{pressAssets.map((item, index) => <a className={`press-card ${item.legacy ? 'archive-card' : ''}`} href={item.src} target="_blank" rel="noreferrer" key={`${item.src}-${index}`} aria-label={`Mở ảnh: ${item.name}`}><img src={item.src} alt={item.name} loading="lazy" /><div><span>{item.season}</span><strong>{item.name}</strong><span aria-hidden="true">↗</span></div></a>)}</div>
+        <div className="press-grid">{pressAssets.map((item, index) => <a className={`press-card ${item.legacy ? 'archive-card' : ''}`} href={item.src} target="_blank" rel="noreferrer" key={`${item.src}-${index}`} aria-label={`Mở ảnh: ${item.name}`}><img {...displayImageProps(item.src)} alt={item.name} loading="lazy" /><div><span>{item.season}</span><strong>{item.name}</strong><span aria-hidden="true">↗</span></div></a>)}</div>
           {!pressAssets.some(item => !item.legacy) && <p className="press-upload-note">Ấn phẩm Gen 16 mới sẽ hiện ở đây khi được thêm vào <code>assets/press</code>.</p>}
       </section>
     </div>
@@ -196,7 +205,7 @@ export default function App() {
     targetProgress.current = clamped;
     progress.current = clamped;
     setChapter(clamped);
-    window.scrollTo({ top: scrollRange.current * clamped / 4, behavior: 'instant' });
+    if (!isMobileLayout()) window.scrollTo({ top: scrollRange.current * clamped / 4, behavior: 'instant' });
     if (progressLine.current) progressLine.current.style.transform = `scaleX(${clamped / 4})`;
     sceneState.current.focusRequest = (sceneState.current.focusRequest || 0) + 1;
     setMenuOpen(false);
@@ -204,11 +213,36 @@ export default function App() {
   const onReady = useCallback(() => setReady(true), []);
   const onFailure = useCallback(() => { setFailure(true); setReady(true); }, []);
   useEffect(() => {
+    const header = document.querySelector('.site-header');
+    const footer = document.querySelector('.journey-footer');
+    const stage = document.querySelector('.story-stage');
+    const measure = () => {
+      stage.style.setProperty('--story-top', `${Math.ceil(header.getBoundingClientRect().bottom) + 8}px`);
+      stage.style.setProperty('--story-bottom', `${Math.ceil(window.innerHeight - footer.getBoundingClientRect().top) + 8}px`);
+    };
+    const observer = new ResizeObserver(measure);
+    observer.observe(header);
+    observer.observe(footer);
+    window.addEventListener('resize', measure);
+    window.visualViewport?.addEventListener('resize', measure);
+    measure();
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', measure);
+      window.visualViewport?.removeEventListener('resize', measure);
+    };
+  }, []);
+  useEffect(() => {
     // The DOM and WebGL camera consume the same eased clock. No second scroll tween.
     let measuredHeight = window.innerHeight;
     let measured = false, resizing = false, resizeFrame;
-    const update = () => { if (resizing || window.innerHeight !== measuredHeight || tabParamVal !== null) return; targetProgress.current = Math.max(0, Math.min(4, window.scrollY / scrollRange.current * 4)); };
+    const update = () => {
+      if (isMobileLayout() || resizing || window.innerHeight !== measuredHeight || tabParamVal !== null) return;
+      targetProgress.current = Math.max(0, Math.min(4, window.scrollY / scrollRange.current * 4));
+      schedule();
+    };
     const resize = () => {
+      if (isMobileLayout()) { measuredHeight = window.innerHeight; measured = true; return; }
       if (!measured) {
         scrollRange.current = Math.max(1, (scrollTrackRef.current?.offsetHeight || window.innerHeight) - window.innerHeight);
         measured = true;
@@ -223,8 +257,10 @@ export default function App() {
         targetProgress.current = preserved; resizing = false;
       });
     };
-    let frame, last = performance.now(), displayedChapter = -1;
+    let frame = null, last = performance.now(), displayedChapter = -1;
+    const schedule = () => { if (frame === null) frame = requestAnimationFrame(advance); };
     const advance = now => {
+      frame = null;
       const dt = Math.min((now - last) / 1000, 0.1); last = now;
       const distance = targetProgress.current - progress.current;
       progress.current += distance * (1 - Math.exp(-dt * 18));
@@ -232,7 +268,7 @@ export default function App() {
       if (progressLine.current) progressLine.current.style.transform = `scaleX(${progress.current / 4})`;
       const next = Math.round(progress.current);
       if (next !== displayedChapter) { displayedChapter = next; setChapter(next); }
-      frame = requestAnimationFrame(advance);
+      if (Math.abs(distance) >= 0.0001) schedule();
     };
     const key = event => {
       if (sceneState.current.modal || ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName)) return;
@@ -247,7 +283,7 @@ export default function App() {
     window.addEventListener('scroll', update, { passive: true });
     window.addEventListener('resize', resize);
     window.addEventListener('keydown', key);
-    resize(); frame = requestAnimationFrame(advance);
+    resize(); schedule();
     return () => { cancelAnimationFrame(frame); cancelAnimationFrame(resizeFrame); window.removeEventListener('scroll', update); window.removeEventListener('resize', resize); window.removeEventListener('keydown', key); };
   }, [goTo]);
 
@@ -298,7 +334,7 @@ export default function App() {
 
       <main id="chapter-content" className="story-stage" tabIndex={-1}>
         {chapters.map((story, panelIndex) => <section key={story.id} className={`story-layer chapter-${panelIndex} ${chapter === panelIndex ? 'active' : ''}`} inert={chapter !== panelIndex} aria-hidden={chapter !== panelIndex}>
-        <div className="chapter-content"><div className="chapter-copy">
+        {chapter === panelIndex && <div className="chapter-content"><div className="chapter-copy">
           {panelIndex === 0 && <>
             <div className="hero-bnd-layout">
               <div className="hero-text-col">
@@ -324,7 +360,7 @@ export default function App() {
               </div>
               <div className="hero-visual-col">
                 <div className="hero-poster-frame">
-                  <img src={gen16Cover} alt="Bộ nhận diện Gen 16 REC - ROAD Về Nhà" className="hero-poster-img" />
+                  <img {...displayImageProps(gen16Cover)} alt="Bộ nhận diện Gen 16 REC - ROAD Về Nhà" className="hero-poster-img" />
                 </div>
               </div>
             </div>
@@ -352,7 +388,7 @@ export default function App() {
               <h2>Chuyện tụi mình <em>đã cùng làm.</em></h2>
               <p className="chapter-description">Từ những buổi học, sự kiện đến chuyến đi xa — mỗi dịp lại có thêm chuyện vui để nhớ.</p>
               <div className="activity-big-card">
-                <button className="activity-preview-image" onClick={() => setSelection({ type: 'activity', index: activityIndex })} aria-label={`Xem ảnh và câu chuyện: ${activeActivity.name}`}><img key={activeActivity.id} src={activeActivity.image} alt={activeActivity.name} /></button>
+                <button className="activity-preview-image" onClick={() => setSelection({ type: 'activity', index: activityIndex })} aria-label={`Xem ảnh và câu chuyện: ${activeActivity.name}`}><img key={activeActivity.id} {...displayImageProps(activeActivity.image)} alt={activeActivity.name} /></button>
                 <div className="activity-preview-meta">
                   <span className="mono">{String(activityIndex + 1).padStart(2, '0')} / {String(activities.length).padStart(2, '0')}</span>
                   <h3>{activeActivity.name}</h3><p className="activity-tagline">{activeActivity.tag}</p>
@@ -374,7 +410,7 @@ export default function App() {
               </div>
               <div className="department-right-side">
                 <div className="department-photo-card" onClick={() => setSelection({ type: 'department', index: departmentIndex })}>
-                  <img key={departments[departmentIndex].id} src={departmentImages[departmentIndex]} alt={`Ban ${departments[departmentIndex].short}`} className="department-photo" />
+                  <img key={departments[departmentIndex].id} {...displayImageProps(departmentImages[departmentIndex])} alt={`Ban ${departments[departmentIndex].short}`} className="department-photo" />
                   <div className="department-photo-caption">
                     <span className="caption-label">BAN {departments[departmentIndex].short.toUpperCase()}</span>
                     <strong className="caption-tagline">{departments[departmentIndex].tag}</strong>
@@ -384,7 +420,7 @@ export default function App() {
                 <div className="department-thumb-switch">
                   {departments.map((d, i) => (
                     <button key={d.id} className={`thumb-btn ${departmentIndex === i ? 'active' : ''}`} onClick={() => setDepartmentIndex(i)}>
-                      <img src={departmentImages[i]} alt={d.short} />
+                      <img {...displayImageProps(departmentImages[i], true)} alt={d.short} loading="lazy" />
                       <span>{d.short}</span>
                     </button>
                   ))}
@@ -396,7 +432,7 @@ export default function App() {
             <div className="join-balanced-grid">
               <div className="join-grid-banner">
                 <div className="join-hero-banner-wrapper">
-                  <img src={gen16FormBanner} alt="Tuyển thành viên Gen 16" className="join-form-cover" />
+                  <img {...displayImageProps(gen16FormBanner)} alt="Tuyển thành viên Gen 16" className="join-form-cover" />
                 </div>
               </div>
               <div className="join-grid-main">
@@ -417,7 +453,7 @@ export default function App() {
               </div>
             </div>
           </>}
-        </div></div>
+        </div></div>}
         </section>)}
       </main>
 

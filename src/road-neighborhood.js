@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { ROAD_LANDMARKS } from './road-landmarks';
 
 const palette = [0xc5ac98, 0x9db4c2, 0xd6b7a8, 0xaab8a7, 0xbcb3a6];
@@ -65,10 +66,10 @@ function signTexture(label, number) {
   ctx.fillStyle = '#cf3c34';
   ctx.fillRect(0, 147, 512, 13);
   ctx.fillStyle = '#a9c4dd';
-  ctx.font = '600 19px Arial';
+  ctx.font = '600 19px Montserrat, sans-serif';
   ctx.fillText(`REC FTU  /  CHẶNG 0${number}`, 28, 38);
   ctx.fillStyle = '#fff';
-  ctx.font = '700 67px Arial';
+  ctx.font = '700 67px Montserrat, sans-serif';
   ctx.fillText(label, 27, 112, 475);
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
@@ -163,5 +164,28 @@ export function addRoadNeighborhood(scene, roadPath, roadHalfWidth, roadsideAt, 
       }
     }
   });
+  return batchStaticMeshes(root);
+}
+
+export function batchStaticMeshes(root) {
+  // Static details share one draw call per material and shadow role.
+  root.updateMatrixWorld(true);
+  const batches = new Map();
+  root.traverse(object => {
+    if (!object.isMesh) return;
+    const key = `${object.material.uuid}:${object.castShadow}`;
+    if (!batches.has(key)) batches.set(key, { material: object.material, castShadow: object.castShadow, geometries: [] });
+    batches.get(key).geometries.push(object.geometry.clone().applyMatrix4(object.matrixWorld));
+    object.geometry.dispose();
+  });
+  root.clear();
+  for (const batch of batches.values()) {
+    const geometry = mergeGeometries(batch.geometries);
+    batch.geometries.forEach(item => item.dispose());
+    const object = new THREE.Mesh(geometry, batch.material);
+    object.castShadow = batch.castShadow;
+    object.receiveShadow = true;
+    root.add(object);
+  }
   return root;
 }
