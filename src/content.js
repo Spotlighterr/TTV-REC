@@ -47,7 +47,7 @@ export const activities = [
 ].map(item => ({ ...item, image: activityImages[item.id] }));
 export const departments = Object.entries(departmentData).map(([id, data], i) => ({
   id, ...data, number: `0${i + 1}`,
-  short: ['Chuyên môn', 'Truyền thông', 'Đối ngoại', 'Tổ chức'][i],
+  short: ['R&D', 'Truyền thông', 'Đối ngoại', 'Tổ chức'][i],
   line: ['Đặt câu hỏi. Tìm lời giải.', 'Biến ý tưởng thành tiếng nói.', 'Mở ra những kết nối mới.', 'Biến kế hoạch thành trải nghiệm.'][i],
 }));
 export const recruitmentIntro = [
