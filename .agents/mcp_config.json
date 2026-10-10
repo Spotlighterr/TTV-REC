@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "ai-handoff": {
+      "command": "/usr/bin/python3",
+      "args": ["/home/spotlighter/workspaces/TTV-REC/tools/ai_handoff_mcp.py"]
+    }
+  }
+}
